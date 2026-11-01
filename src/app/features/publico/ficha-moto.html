@@ -1,0 +1,101 @@
+<a class="enlace-volver" [routerLink]="volver()"><app-icono nombre="atras" />Volver al listado</a>
+
+@if (moto.isLoading()) {
+  <app-esqueleto etiqueta="Cargando la moto" [cantidad]="5" />
+} @else if (noDisponible()) {
+  <app-estado-vacio titulo="Esta moto no está disponible." [mensaje]="mensajeError()" icono="moto">
+    <a class="btn btn--primario" routerLink="/">Ver motos disponibles</a>
+  </app-estado-vacio>
+} @else if (moto.error()) {
+  <app-estado-error
+    titulo="No se pudo cargar la moto."
+    [mensaje]="mensajeError()"
+    (reintentar)="moto.reload()"
+  />
+} @else if (detalle(); as moto) {
+  <article class="ficha">
+    <app-foto-moto class="ficha__foto" [tipo]="moto.tipoMoto" />
+
+    <div class="ficha__info">
+      <app-placa [placa]="moto.placa" [grande]="true" />
+      <h1 class="ficha__titulo">{{ moto.marca }} {{ moto.modelo }}</h1>
+      <p class="muted">{{ tipo() }} · Modelo {{ moto.anio }} · {{ moto.color }}</p>
+
+      <div class="ficha__compra">
+        <p class="ficha__precio dato">{{ moto.precio | pesos }}</p>
+        @switch (perfil()) {
+          @case ('invitado') {
+            <a
+              class="btn btn--primario"
+              routerLink="/ingresar"
+              [queryParams]="{ volver: '/motos/' + moto.placa }"
+            >
+              Reservar esta moto
+            </a>
+            <p class="muted pequeno">
+              Para reservar necesitas iniciar sesión o
+              <a routerLink="/registro">crear tu cuenta de cliente</a>.
+            </p>
+          }
+          @case ('cliente') {
+            <a class="btn btn--primario" [routerLink]="['/cliente/reservar', moto.placa]">
+              Reservar esta moto
+            </a>
+            <p class="muted pequeno">
+              La reserva aparta la moto 7 días sin pago. La compra se cierra en la sede.
+            </p>
+          }
+          @default {
+            <p class="muted pequeno">Las reservas se hacen desde una cuenta de cliente.</p>
+          }
+        }
+      </div>
+
+      <section aria-labelledby="titulo-datos">
+        <h2 id="titulo-datos">Datos técnicos</h2>
+        <dl class="ficha__datos">
+          <div>
+            <dt>Cilindraje</dt>
+            <dd class="dato">{{ moto.cilindraje }}<span class="dato__unidad">cc</span></dd>
+          </div>
+          <div>
+            <dt>Potencia</dt>
+            <dd class="dato">{{ moto.potenciaHp | numero }}<span class="dato__unidad">hp</span></dd>
+          </div>
+          <div>
+            <dt>Tanque</dt>
+            <dd class="dato">
+              {{ moto.capacidadTanque | numero }}<span class="dato__unidad">litros</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Kilometraje</dt>
+            <dd class="dato">{{ moto.kilometraje | numero }}<span class="dato__unidad">km</span></dd>
+          </div>
+          <div>
+            <dt>Marca</dt>
+            <dd>{{ moto.marca }}, {{ moto.paisOrigenMarca }}</dd>
+          </div>
+          <div>
+            <dt>Tipo</dt>
+            <dd>{{ tipo() }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section aria-labelledby="titulo-sede">
+        <h2 id="titulo-sede">Dónde verla</h2>
+        <p class="ficha__sede">
+          <app-icono nombre="sede" />
+          <span>
+            <strong>{{ moto.sucursal.nombre }}</strong><br />
+            {{ direccion() }}
+          </span>
+        </p>
+        <a routerLink="/" [queryParams]="{ sede: moto.sucursal.idSucursal }">
+          Ver las motos de {{ moto.sucursal.nombre }}
+        </a>
+      </section>
+    </div>
+  </article>
+}

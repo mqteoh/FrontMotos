@@ -1,1 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+@import './styles/tokens.css';
+@import './styles/base.css';
+@import './styles/controles.css';
+@import './styles/componentes.css';
+@import './styles/layout.css';
+@import './styles/publico.css';

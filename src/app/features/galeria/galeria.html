@@ -1,0 +1,204 @@
+<header>
+  <h1>Componentes</h1>
+  <p class="muted">
+    Referencia del sistema visual para el equipo. Esta página solo existe al ejecutar
+    <span class="dato">ng serve</span>; la compilación de producción no la incluye. Los datos son
+    filas del script <span class="dato">02_insercion.sql</span>.
+  </p>
+</header>
+
+<section aria-labelledby="g-botones">
+  <h2 id="g-botones">Botones</h2>
+  <div class="fila">
+    <button type="button" class="btn btn--primario" (click)="accion('Reservar esta moto')">
+      Reservar esta moto
+    </button>
+    <button type="button" class="btn btn--secundario" (click)="accion('Ver otras motos')">
+      Ver otras motos
+    </button>
+    <button type="button" class="btn btn--peligro" (click)="cancelarPrimeraActiva()">
+      Cancelar reserva
+    </button>
+    <button type="button" class="btn btn--primario" disabled>Registrar venta</button>
+    <button
+      type="button"
+      class="btn btn--icono"
+      aria-label="Ver el taller"
+      title="Ver el taller"
+      (click)="accion('Ver el taller')"
+    >
+      <app-icono nombre="taller" />
+    </button>
+  </div>
+</section>
+
+<section aria-labelledby="g-placa">
+  <h2 id="g-placa">Placa y estados</h2>
+  <div class="fila">
+    <app-placa placa="GTK22F" />
+    <app-placa placa="MNP13E" [grande]="true" />
+  </div>
+  <div class="fila">
+    @for (estado of estados; track estado) {
+      <app-chip-estado [estado]="estado" />
+    }
+  </div>
+</section>
+
+<section aria-labelledby="g-tarjetas">
+  <h2 id="g-tarjetas">Tarjetas de moto</h2>
+  <ul class="grid-motos">
+    @for (moto of motos; track moto.placa) {
+      <li><app-tarjeta-moto [moto]="moto" [nivelTitulo]="3" /></li>
+    }
+  </ul>
+</section>
+
+<section aria-labelledby="g-formulario">
+  <h2 id="g-formulario">Formulario</h2>
+  <p class="muted">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
+  <form class="formulario" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+    <div class="formulario__fila">
+      <app-campo etiqueta="Nombre completo" [obligatorio]="true" [error]="error(formulario.controls.nombre)">
+        <input appControl type="text" formControlName="nombre" autocomplete="name" />
+      </app-campo>
+      <app-campo
+        etiqueta="Correo"
+        [obligatorio]="true"
+        [error]="error(formulario.controls.correo)"
+      >
+        <input
+          appControl
+          type="email"
+          formControlName="correo"
+          autocomplete="email"
+          placeholder="nombre@correo.com"
+        />
+      </app-campo>
+    </div>
+    <app-campo
+      etiqueta="Ciudad"
+      ayuda="Solo hay sedes en estas tres ciudades."
+      [obligatorio]="true"
+      [error]="error(formulario.controls.ciudad)"
+    >
+      <select appControl formControlName="ciudad">
+        <option value="" disabled>Elige una ciudad</option>
+        <option value="Bogotá">Bogotá</option>
+        <option value="Medellín">Medellín</option>
+        <option value="Cali">Cali</option>
+      </select>
+    </app-campo>
+    <app-campo
+      etiqueta="Contraseña"
+      ayuda="Mínimo 8 caracteres."
+      [obligatorio]="true"
+      [error]="error(formulario.controls.contrasena)"
+    >
+      <input appControl type="password" formControlName="contrasena" autocomplete="new-password" />
+    </app-campo>
+    <div class="acciones">
+      <button type="submit" class="btn btn--primario">Validar datos</button>
+    </div>
+  </form>
+</section>
+
+<section aria-labelledby="g-tabla">
+  <h2 id="g-tabla">Tabla</h2>
+  <p class="muted">Pulsa un encabezado para ordenar. Por debajo de 768 px cada fila es una tarjeta.</p>
+  <app-tabla
+    titulo="Reservas de la Sede Chapinero"
+    [columnas]="columnas"
+    [filas]="reservas()"
+    [claveFila]="claveReserva"
+  >
+    <ng-template #acciones let-reserva>
+      @if (reserva.estado === 'ACTIVA') {
+        <button type="button" class="btn btn--peligro" (click)="cancelarReserva(reserva)">
+          Cancelar<span class="sr-only"> la reserva {{ reserva.id }}</span>
+        </button>
+      } @else {
+        <span class="muted pequeno">Sin acciones</span>
+      }
+    </ng-template>
+  </app-tabla>
+</section>
+
+<section aria-labelledby="g-dialogo">
+  <h2 id="g-dialogo">Diálogo y avisos</h2>
+  <div class="fila">
+    <button type="button" class="btn btn--secundario" (click)="dialogoAbierto.set(true)">
+      Ver condiciones de la reserva
+    </button>
+    <button type="button" class="btn btn--secundario" (click)="mostrarAviso('exito')">
+      Aviso de éxito
+    </button>
+    <button type="button" class="btn btn--secundario" (click)="mostrarAviso('error')">
+      Aviso de error
+    </button>
+    <button type="button" class="btn btn--secundario" (click)="mostrarAviso('info')">
+      Aviso informativo
+    </button>
+  </div>
+  <app-dialogo titulo="Condiciones de la reserva" [(abierto)]="dialogoAbierto">
+    <p>
+      La reserva aparta la moto durante 7 días sin pago. Para comprarla, acércate a la sede con tu
+      documento; el vendedor registra la venta allí.
+    </p>
+    <button pie type="button" class="btn btn--primario" (click)="dialogoAbierto.set(false)">
+      Entendido
+    </button>
+  </app-dialogo>
+</section>
+
+<section aria-labelledby="g-estados">
+  <h2 id="g-estados">Estados de datos</h2>
+  <div class="fila" role="group" aria-label="Estado a mostrar">
+    <button
+      type="button"
+      class="btn btn--secundario"
+      [attr.aria-pressed]="estadoDemo() === 'cargando'"
+      (click)="estadoDemo.set('cargando')"
+    >
+      Cargando
+    </button>
+    <button
+      type="button"
+      class="btn btn--secundario"
+      [attr.aria-pressed]="estadoDemo() === 'vacio'"
+      (click)="estadoDemo.set('vacio')"
+    >
+      Vacío
+    </button>
+    <button
+      type="button"
+      class="btn btn--secundario"
+      [attr.aria-pressed]="estadoDemo() === 'error'"
+      (click)="estadoDemo.set('error')"
+    >
+      Error
+    </button>
+  </div>
+  <div class="demo-estado">
+    @switch (estadoDemo()) {
+      @case ('cargando') {
+        <app-esqueleto etiqueta="Cargando motos disponibles" forma="tarjetas" [cantidad]="3" />
+      }
+      @case ('vacio') {
+        <app-estado-vacio
+          titulo="Aún no tienes reservas."
+          mensaje="Cuando apartes una moto aparecerá aquí con su fecha de vencimiento."
+          icono="moto"
+        >
+          <a class="btn btn--primario" routerLink="/">Ver motos disponibles</a>
+        </app-estado-vacio>
+      }
+      @case ('error') {
+        <app-estado-error
+          titulo="No se pudieron cargar las motos."
+          (reintentar)="estadoDemo.set('cargando')"
+        />
+      }
+    }
+  </div>
+</section>

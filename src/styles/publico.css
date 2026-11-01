@@ -1,0 +1,366 @@
+.catalogo,
+.pagina-lista {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.catalogo__cabecera p {
+  margin: 0;
+}
+
+.catalogo__cuerpo {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.catalogo__filtros {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.catalogo__filtros-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.catalogo__filtros-titulo {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.catalogo__panel {
+  display: none;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.catalogo__panel--abierto {
+  display: grid;
+}
+
+.catalogo__precio {
+  display: grid;
+  gap: var(--space-05);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.catalogo__precio-campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.catalogo__resultados {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  min-width: 0;
+}
+
+.catalogo__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.catalogo__conteo {
+  margin: 0;
+  font-weight: 600;
+}
+
+.catalogo__orden {
+  display: grid;
+  gap: var(--space-05);
+  min-width: 15rem;
+  font-size: var(--texto-pequeno);
+  font-weight: 600;
+}
+
+@media (min-width: 1024px) {
+  .catalogo__cuerpo {
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+  }
+
+  .catalogo__filtros {
+    position: sticky;
+    top: calc(var(--alto-cabecera) + var(--space-2));
+  }
+
+  .catalogo__alternar {
+    display: none;
+  }
+
+  .catalogo__panel {
+    display: grid;
+  }
+
+  .catalogo .grid-motos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .catalogo .grid-motos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 479.98px) {
+  .catalogo__orden {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.grid-motos--animada > li {
+  animation: aparecer var(--dur-pagina) var(--curva-entrada) both;
+  animation-delay: calc(min(var(--i, 0), 6) * 40ms);
+}
+
+.paginacion ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paginacion li:empty {
+  display: none;
+}
+
+.paginacion__numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--alto-control);
+  min-height: var(--alto-control);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-family: var(--font-data);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.paginacion__numero:hover {
+  background: var(--color-surface-2);
+}
+
+.paginacion__numero[aria-current='page'] {
+  border-color: var(--color-accent-text);
+  color: var(--color-accent-text);
+  font-weight: 600;
+}
+
+.paginacion__salto {
+  padding-inline: var(--space-05);
+  color: var(--color-text-muted);
+}
+
+.enlace-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--alto-control);
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+
+.ficha {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.ficha__foto {
+  border-radius: var(--radius);
+}
+
+.ficha__info {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  align-content: start;
+}
+
+.ficha__info > * {
+  margin: 0;
+}
+
+.ficha__titulo {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.ficha__compra {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.ficha__compra p {
+  margin: 0;
+}
+
+.ficha__precio {
+  font-size: 1.75rem;
+}
+
+.ficha__info section {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  width: 100%;
+  padding-top: var(--space-2);
+}
+
+.ficha__info h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.ficha__datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-divider);
+}
+
+.ficha__datos div {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-surface);
+}
+
+.ficha__datos dt {
+  color: var(--color-text-muted);
+  font-size: var(--texto-pequeno);
+}
+
+.ficha__datos dd {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.ficha__sede {
+  display: flex;
+  gap: var(--space-1);
+  align-items: flex-start;
+}
+
+.ficha__sede app-icono {
+  margin-top: 0.2em;
+  color: var(--color-accent-text);
+}
+
+@media (min-width: 768px) {
+  .ficha__datos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ficha {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .ficha__foto {
+    position: sticky;
+    top: calc(var(--alto-cabecera) + var(--space-3));
+  }
+
+  .ficha__datos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.sedes__ciudad {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sedes__ciudad h2 {
+  margin: 0;
+}
+
+.sedes__lista {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .sedes__lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.sede {
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  justify-items: start;
+  padding: var(--space-3);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.sede > * {
+  margin: 0;
+}
+
+.sede__nombre {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.sede__nombre app-icono {
+  color: var(--color-accent-text);
+}
+
+.sede__direccion {
+  color: var(--color-text-muted);
+}
+
+.sede__motos .dato {
+  font-size: 1.25rem;
+}

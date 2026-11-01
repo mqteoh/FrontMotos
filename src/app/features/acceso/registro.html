@@ -1,0 +1,114 @@
+<h1>Crear cuenta de cliente</h1>
+<p class="muted">
+  Con tu cuenta puedes reservar motos y agendar reparaciones. Los campos con
+  <span aria-hidden="true">*</span> son obligatorios.
+</p>
+@if (errorGeneral()) {
+  <p class="alerta" role="alert">
+    <app-icono nombre="error" /><span
+      >{{ errorGeneral() }} Si ya tienes cuenta,
+      <a routerLink="/ingresar">inicia sesión</a>.</span
+    >
+  </p>
+}
+<form class="formulario" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+  <fieldset class="grupo">
+    <legend>Datos personales</legend>
+    <app-campo
+      etiqueta="Número de documento"
+      ayuda="Si ya compraste en una sede, usa el mismo documento y activaremos tu cuenta."
+      [obligatorio]="true"
+      [error]="error('documento')"
+    >
+      <input appControl type="text" inputmode="numeric" formControlName="documento" />
+    </app-campo>
+    <div class="formulario__fila">
+      <app-campo etiqueta="Nombres" [obligatorio]="true" [error]="error('nombres')">
+        <input appControl type="text" formControlName="nombres" autocomplete="given-name" />
+      </app-campo>
+      <app-campo etiqueta="Apellidos" [obligatorio]="true" [error]="error('apellidos')">
+        <input appControl type="text" formControlName="apellidos" autocomplete="family-name" />
+      </app-campo>
+    </div>
+    <div class="formulario__fila">
+      <app-campo
+        etiqueta="Fecha de nacimiento"
+        [obligatorio]="true"
+        [error]="error('fechaNacimiento')"
+      >
+        <input appControl type="date" formControlName="fechaNacimiento" [max]="hoy" autocomplete="bday" />
+      </app-campo>
+      <app-campo etiqueta="Teléfono" [error]="error('telefono')">
+        <input appControl type="tel" inputmode="numeric" formControlName="telefono" autocomplete="tel" />
+      </app-campo>
+    </div>
+  </fieldset>
+
+  <fieldset class="grupo">
+    <legend>Dirección</legend>
+    <div class="formulario__fila">
+      <app-campo etiqueta="Ciudad" [obligatorio]="true" [error]="error('ciudad')">
+        <input appControl type="text" formControlName="ciudad" autocomplete="address-level2" />
+      </app-campo>
+      <app-campo etiqueta="Barrio" [obligatorio]="true" [error]="error('barrio')">
+        <input appControl type="text" formControlName="barrio" />
+      </app-campo>
+    </div>
+    <div class="formulario__fila">
+      <app-campo
+        etiqueta="Calle o avenida"
+        ayuda="Por ejemplo: Calle 63"
+        [obligatorio]="true"
+        [error]="error('calle')"
+      >
+        <input appControl type="text" formControlName="calle" />
+      </app-campo>
+      <app-campo
+        etiqueta="Número"
+        ayuda="Por ejemplo: 13-45"
+        [obligatorio]="true"
+        [error]="error('numeroDireccion')"
+      >
+        <input appControl type="text" formControlName="numeroDireccion" />
+      </app-campo>
+    </div>
+  </fieldset>
+
+  <fieldset class="grupo">
+    <legend>Acceso</legend>
+    <app-campo etiqueta="Correo" [obligatorio]="true" [error]="error('correo')">
+      <input appControl type="email" inputmode="email" formControlName="correo" autocomplete="email" />
+    </app-campo>
+    <app-campo
+      etiqueta="Contraseña"
+      ayuda="Entre 8 y 72 caracteres, con al menos una letra y un número."
+      [obligatorio]="true"
+      [error]="error('contrasena')"
+    >
+      <div class="control-accion">
+        <input
+          appControl
+          [type]="verClave() ? 'text' : 'password'"
+          formControlName="contrasena"
+          autocomplete="new-password"
+        />
+        <button
+          type="button"
+          class="control-accion__boton"
+          [attr.aria-pressed]="verClave()"
+          (click)="verClave.set(!verClave())"
+        >
+          <app-icono [nombre]="verClave() ? 'ocultar' : 'ver'" />
+          <span class="sr-only">Mostrar contraseña</span>
+        </button>
+      </div>
+    </app-campo>
+  </fieldset>
+
+  <div class="acciones">
+    <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+      {{ enviando() ? 'Creando cuenta…' : 'Crear mi cuenta' }}
+    </button>
+  </div>
+</form>
+<p class="acceso__alterno">¿Ya tienes cuenta? <a routerLink="/ingresar">Inicia sesión</a></p>

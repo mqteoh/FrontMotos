@@ -1,0 +1,206 @@
+<header class="catalogo__cabecera">
+  <h1>Motos disponibles</h1>
+  @if (opciones(); as datos) {
+    <p class="muted">
+      {{ datos.totalDisponibles }} motos listas para reservar en {{ datos.sedes.length }} sedes.
+      La reserva las aparta 7 días sin pago.
+    </p>
+  }
+</header>
+
+<div class="catalogo__cuerpo">
+  <aside class="catalogo__filtros" aria-labelledby="titulo-filtros">
+    <div class="catalogo__filtros-cabecera">
+      <h2 id="titulo-filtros" class="catalogo__filtros-titulo">Filtros</h2>
+      <button
+        type="button"
+        class="btn btn--secundario catalogo__alternar"
+        aria-controls="panel-filtros"
+        [attr.aria-expanded]="filtrosAbiertos()"
+        (click)="filtrosAbiertos.set(!filtrosAbiertos())"
+      >
+        {{ filtrosAbiertos() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+        @if (cantidadFiltros() > 0) {
+          <span class="dato">({{ cantidadFiltros() }} {{ cantidadFiltros() === 1 ? 'activo' : 'activos' }})</span>
+        }
+      </button>
+    </div>
+
+    <form
+      id="panel-filtros"
+      class="catalogo__panel"
+      [class.catalogo__panel--abierto]="filtrosAbiertos()"
+      role="search"
+      aria-label="Filtrar motos"
+      (submit)="$event.preventDefault()"
+    >
+      <div class="campo">
+        <label class="campo__etiqueta" for="filtro-texto">Buscar</label>
+        <p class="campo__ayuda" id="filtro-texto-ayuda">Marca, modelo o placa.</p>
+        <input
+          #campoTexto
+          id="filtro-texto"
+          class="control"
+          type="search"
+          autocomplete="off"
+          aria-describedby="filtro-texto-ayuda"
+          [value]="busqueda().texto"
+          (input)="escribirTexto($event)"
+        />
+      </div>
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="filtro-marca">Marca</label>
+        <select id="filtro-marca" class="control" (change)="elegir('marca', $event)">
+          <option value="" [selected]="!busqueda().marca">Todas las marcas</option>
+          @for (marca of opciones()?.marcas ?? []; track marca.valor) {
+            <option [value]="marca.valor" [selected]="marca.valor === busqueda().marca">
+              {{ marca.valor }} ({{ marca.disponibles }})
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="filtro-tipo">Tipo</label>
+        <select id="filtro-tipo" class="control" (change)="elegir('tipo', $event)">
+          <option value="" [selected]="!busqueda().tipo">Todos los tipos</option>
+          @for (tipo of opciones()?.tipos ?? []; track tipo.valor) {
+            <option [value]="tipo.valor" [selected]="tipo.valor === busqueda().tipo">
+              {{ nombreTipo(tipo.valor) }} ({{ tipo.disponibles }})
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="filtro-sede">Sede</label>
+        <select id="filtro-sede" class="control" (change)="elegirSede($event)">
+          <option value="" [selected]="busqueda().sede === null">Todas las sedes</option>
+          @for (sede of opciones()?.sedes ?? []; track sede.idSucursal) {
+            <option [value]="sede.idSucursal" [selected]="sede.idSucursal === busqueda().sede">
+              {{ sede.nombre }}, {{ sede.ciudad }} ({{ sede.disponibles }})
+            </option>
+          }
+        </select>
+      </div>
+
+      <fieldset class="catalogo__precio">
+        <legend class="campo__etiqueta">Precio en pesos</legend>
+        <div class="catalogo__precio-campos">
+          <div class="campo">
+            <label class="pequeno" for="filtro-precio-min">Desde</label>
+            <input
+              #campoMin
+              id="filtro-precio-min"
+              class="control dato"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              step="100000"
+              [value]="busqueda().precioMin ?? ''"
+              [placeholder]="opciones()?.precioMinimo | pesos"
+              [attr.aria-invalid]="errorPrecio() ? 'true' : null"
+              [attr.aria-describedby]="errorPrecio() ? 'error-precio' : null"
+              (change)="cambiarPrecio('precioMin', $event)"
+            />
+          </div>
+          <div class="campo">
+            <label class="pequeno" for="filtro-precio-max">Hasta</label>
+            <input
+              #campoMax
+              id="filtro-precio-max"
+              class="control dato"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              step="100000"
+              [value]="busqueda().precioMax ?? ''"
+              [placeholder]="opciones()?.precioMaximo | pesos"
+              [attr.aria-invalid]="errorPrecio() ? 'true' : null"
+              [attr.aria-describedby]="errorPrecio() ? 'error-precio' : null"
+              (change)="cambiarPrecio('precioMax', $event)"
+            />
+          </div>
+        </div>
+        @if (errorPrecio()) {
+          <p id="error-precio" class="campo__error" role="alert">
+            <app-icono nombre="error" />{{ errorPrecio() }}
+          </p>
+        }
+      </fieldset>
+
+      @if (conFiltros()) {
+        <button type="button" class="btn btn--secundario" (click)="quitarFiltros()">
+          Quitar filtros
+        </button>
+      }
+    </form>
+  </aside>
+
+  <section class="catalogo__resultados" aria-labelledby="titulo-resultados">
+    <h2 id="titulo-resultados" class="sr-only">Resultados</h2>
+    <div class="catalogo__barra">
+      <p #conteo class="catalogo__conteo" tabindex="-1" aria-live="polite">
+        {{ motos.isLoading() ? 'Buscando motos…' : resumen() }}
+      </p>
+      <div class="catalogo__orden">
+        <label for="filtro-orden">Ordenar por</label>
+        <select id="filtro-orden" class="control" (change)="elegir('orden', $event)">
+          @for (orden of ordenes; track orden.valor) {
+            <option [value]="orden.valor" [selected]="orden.valor === busqueda().orden">
+              {{ orden.etiqueta }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (motos.isLoading()) {
+      <app-esqueleto etiqueta="Cargando motos" forma="tarjetas" [cantidad]="6" />
+    } @else if (motos.error()) {
+      <app-estado-error
+        titulo="No se pudieron cargar las motos."
+        [mensaje]="mensajeError()"
+        (reintentar)="motos.reload()"
+      >
+        @if (conFiltros()) {
+          <button type="button" class="btn btn--secundario" (click)="quitarFiltros()">
+            Quitar filtros
+          </button>
+        }
+      </app-estado-error>
+    } @else if (pagina(); as pagina) {
+      @if (pagina.contenido.length === 0) {
+        @if (conFiltros()) {
+          <app-estado-vacio
+            titulo="No hay motos con esos filtros."
+            mensaje="Prueba con otra marca, otro rango de precio u otra sede."
+            icono="moto"
+          >
+            <button type="button" class="btn btn--primario" (click)="quitarFiltros()">
+              Quitar filtros
+            </button>
+          </app-estado-vacio>
+        } @else {
+          <app-estado-vacio
+            titulo="Por ahora no hay motos disponibles."
+            mensaje="Cuando llegue una moto nueva a alguna sede aparecerá aquí."
+            icono="moto"
+          />
+        }
+      } @else {
+        <ul class="grid-motos grid-motos--animada">
+          @for (moto of pagina.contenido; track moto.placa; let i = $index) {
+            <li [style.--i]="i"><app-tarjeta-moto [moto]="moto" /></li>
+          }
+        </ul>
+        <app-paginacion
+          [actual]="pagina.pagina + 1"
+          [total]="pagina.totalPaginas"
+          (cambio)="irAResultados()"
+        />
+      }
+    }
+  </section>
+</div>
