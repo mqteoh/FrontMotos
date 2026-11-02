@@ -59,14 +59,14 @@
   <p class="muted">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
   <form class="formulario" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
     <div class="formulario__fila">
-      <app-campo etiqueta="Nombre completo" [obligatorio]="true" [error]="error(formulario.controls.nombre)">
+      <app-campo
+        etiqueta="Nombre completo"
+        [obligatorio]="true"
+        [error]="error(formulario.controls.nombre)"
+      >
         <input appControl type="text" formControlName="nombre" autocomplete="name" />
       </app-campo>
-      <app-campo
-        etiqueta="Correo"
-        [obligatorio]="true"
-        [error]="error(formulario.controls.correo)"
-      >
+      <app-campo etiqueta="Correo" [obligatorio]="true" [error]="error(formulario.controls.correo)">
         <input
           appControl
           type="email"
@@ -105,7 +105,9 @@
 
 <section aria-labelledby="g-tabla">
   <h2 id="g-tabla">Tabla</h2>
-  <p class="muted">Pulsa un encabezado para ordenar. Por debajo de 768 px cada fila es una tarjeta.</p>
+  <p class="muted">
+    Pulsa un encabezado para ordenar. Por debajo de 768 px cada fila es una tarjeta.
+  </p>
   <app-tabla
     titulo="Reservas de la Sede Chapinero"
     [columnas]="columnas"

@@ -4,7 +4,8 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { USUARIOS_PRUEBA } from '../../testing/sesion';
-import Ingresar, { rutaSegura } from './ingresar';
+import { rutaSegura } from '../../core/auth/rutas';
+import Ingresar from './ingresar';
 
 describe('Ingresar', () => {
   let backend: HttpTestingController;
@@ -64,7 +65,12 @@ describe('Ingresar', () => {
       correo: 'laura.gomez@concesionario-motos.test',
       contrasena: 'Motos2026*',
     });
-    peticion.flush({ token: 't', tipo: 'Bearer', expiraEnMs: 1000, usuario: USUARIOS_PRUEBA.VENDEDOR });
+    peticion.flush({
+      token: 't',
+      tipo: 'Bearer',
+      expiraEnMs: 1000,
+      usuario: USUARIOS_PRUEBA.VENDEDOR,
+    });
     expect(router.navigateByUrl).toHaveBeenCalledWith('/vendedor/ventas');
   });
 

@@ -15,7 +15,9 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
                   <span class="esqueleto__bloque esqueleto__foto"></span>
                   <div class="tarjeta__cuerpo">
                     <span class="esqueleto__bloque esqueleto__placa"></span>
-                    <span class="esqueleto__bloque esqueleto__linea esqueleto__linea--titulo"></span>
+                    <span
+                      class="esqueleto__bloque esqueleto__linea esqueleto__linea--titulo"
+                    ></span>
                     <span class="esqueleto__bloque esqueleto__linea"></span>
                     <span class="esqueleto__bloque esqueleto__linea esqueleto__linea--corta"></span>
                   </div>

@@ -24,7 +24,7 @@ export function aplicarErroresDeCampos(formulario: FormGroup, error: unknown): b
   const campos = cuerpoError(error)?.campos ?? [];
   let aplicados = false;
   for (const { campo, mensaje } of campos) {
-    const control = formulario.get(campo);
+    const control = formulario.get(campo.replace(/\[(\d+)\]/g, '.$1'));
     if (control) {
       control.setErrors({ ...control.errors, servidor: mensaje });
       control.markAsTouched();

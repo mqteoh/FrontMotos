@@ -13,13 +13,10 @@ import { aplicarErroresDeCampos, mensajeDeError } from '../../core/api/errores';
 import { Usuario } from '../../core/api/modelos';
 import { AuthService } from '../../core/auth/auth.service';
 import { INICIO_ROL } from '../../core/auth/roles';
+import { rutaSegura } from '../../core/auth/rutas';
 import { enfocarPrimerInvalido, mensajeError } from '../../shared/formularios/mensajes';
 import { Campo, Control } from '../../shared/ui/campo/campo';
 import { Icono } from '../../shared/ui/icono/icono';
-
-export function rutaSegura(ruta: string | null): string | null {
-  return ruta?.startsWith('/') && !ruta.startsWith('//') ? ruta : null;
-}
 
 @Component({
   selector: 'app-ingresar',

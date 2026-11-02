@@ -58,8 +58,7 @@ describe('Vitrina', () => {
     return { harness, raiz: harness.fixture.nativeElement as HTMLElement };
   }
 
-  const responderFiltros = () =>
-    backend.expectOne('/api/publico/motos/filtros').flush(FILTROS);
+  const responderFiltros = () => backend.expectOne('/api/publico/motos/filtros').flush(FILTROS);
 
   it('pide las motos con los filtros de la URL y muestra las tarjetas', async () => {
     const { harness, raiz } = await abrir('/?marca=Yamaha&pagina=2');
@@ -67,7 +66,13 @@ describe('Vitrina', () => {
     const peticion = backend.expectOne((r) => r.url === '/api/publico/motos');
     expect(peticion.request.params.get('marca')).toBe('Yamaha');
     expect(peticion.request.params.get('pagina')).toBe('1');
-    peticion.flush({ contenido: [MOTO], pagina: 1, tamano: 12, totalElementos: 13, totalPaginas: 2 });
+    peticion.flush({
+      contenido: [MOTO],
+      pagina: 1,
+      tamano: 12,
+      totalElementos: 13,
+      totalPaginas: 2,
+    });
     await harness.fixture.whenStable();
 
     expect(raiz.querySelectorAll('app-tarjeta-moto').length).toBe(1);
@@ -81,13 +86,15 @@ describe('Vitrina', () => {
   it('elegir una marca la lleva a la URL y vuelve a la primera página', async () => {
     const { harness, raiz } = await abrir('/?pagina=3');
     responderFiltros();
-    backend.expectOne((r) => r.url === '/api/publico/motos').flush({
-      contenido: [MOTO],
-      pagina: 2,
-      tamano: 12,
-      totalElementos: 30,
-      totalPaginas: 3,
-    });
+    backend
+      .expectOne((r) => r.url === '/api/publico/motos')
+      .flush({
+        contenido: [MOTO],
+        pagina: 2,
+        tamano: 12,
+        totalElementos: 30,
+        totalPaginas: 3,
+      });
     await harness.fixture.whenStable();
     const marca = raiz.querySelector<HTMLSelectElement>('#filtro-marca');
     if (marca) {

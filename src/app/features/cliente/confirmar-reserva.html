@@ -1,0 +1,83 @@
+@if (reserva(); as reserva) {
+  <section class="confirmacion" aria-labelledby="titulo-reserva-lista">
+    <h1 id="titulo-reserva-lista" tabindex="-1"><app-icono nombre="exito" />Reserva confirmada</h1>
+    <p>
+      La {{ reserva.marca }} {{ reserva.modelo }} con placa
+      <app-placa [placa]="reserva.placa" /> queda apartada a tu nombre hasta el
+      <strong class="dato">{{ reserva.fechaVencimiento | fecha }}</strong
+      >.
+    </p>
+    <dl class="resumen">
+      <div>
+        <dt>Reserva</dt>
+        <dd class="dato">N.º {{ reserva.idReserva }}</dd>
+      </div>
+      <div>
+        <dt>Sede</dt>
+        <dd>{{ reserva.sucursal }}</dd>
+      </div>
+      <div>
+        <dt>Precio</dt>
+        <dd class="dato">{{ reserva.precio | pesos }}</dd>
+      </div>
+    </dl>
+    <p class="muted">
+      Para comprarla, ve a la sede con tu documento antes de esa fecha. Si no alcanzas, la reserva
+      vence sola y la moto vuelve al catálogo.
+    </p>
+    <div class="acciones">
+      <a class="btn btn--primario" routerLink="/cliente/reservas">Ver mis reservas</a>
+      <a class="btn btn--secundario" routerLink="/">Seguir viendo motos</a>
+    </div>
+  </section>
+} @else if (moto.isLoading()) {
+  <app-esqueleto etiqueta="Cargando la moto" [cantidad]="4" />
+} @else if (noDisponible()) {
+  <app-estado-vacio
+    titulo="Esta moto ya no se puede reservar."
+    [mensaje]="mensajeCarga()"
+    icono="moto"
+  >
+    <a class="btn btn--primario" routerLink="/">Ver motos disponibles</a>
+  </app-estado-vacio>
+} @else if (moto.error()) {
+  <app-estado-error
+    titulo="No se pudo cargar la moto."
+    [mensaje]="mensajeCarga()"
+    (reintentar)="moto.reload()"
+  />
+} @else if (detalle(); as moto) {
+  <section class="confirmacion" aria-labelledby="titulo-confirmar">
+    <h1 id="titulo-confirmar">Confirmar reserva</h1>
+    <div class="confirmacion__moto">
+      <app-placa [placa]="moto.placa" [grande]="true" />
+      <p class="confirmacion__nombre">{{ moto.marca }} {{ moto.modelo }}</p>
+      <p class="dato confirmacion__precio">{{ moto.precio | pesos }}</p>
+      <p class="muted">{{ moto.sucursal.nombre }} · {{ direccion() }}</p>
+    </div>
+    <ul class="condiciones">
+      <li>
+        La moto queda apartada {{ dias }} días, hasta el
+        <strong class="dato">{{ venceEstimado | fecha }}</strong
+        >.
+      </li>
+      <li>No pagas nada ahora. La compra se cierra en la sede con un vendedor.</li>
+      <li>Puedes cancelar la reserva desde «Mis reservas» mientras esté activa.</li>
+    </ul>
+    @if (errorReserva()) {
+      <div id="error-reserva" class="alerta" role="alert" tabindex="-1">
+        <app-icono nombre="error" />
+        <span>
+          {{ errorReserva() }} Revisa <a routerLink="/cliente/reservas">tus reservas</a> o
+          <a routerLink="/">elige otra moto</a>.
+        </span>
+      </div>
+    }
+    <div class="acciones">
+      <button type="button" class="btn btn--primario" [disabled]="enviando()" (click)="confirmar()">
+        {{ enviando() ? 'Reservando…' : 'Confirmar reserva' }}
+      </button>
+      <a class="btn btn--secundario" [routerLink]="['/motos', moto.placa]">Volver a la moto</a>
+    </div>
+  </section>
+}

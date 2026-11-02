@@ -74,6 +74,12 @@ export class AuthService {
       .pipe(map((respuesta) => this.guardar(respuesta)));
   }
 
+  actualizarNombre(nombre: string): void {
+    this.sesion.update((sesion) =>
+      sesion ? { ...sesion, usuario: { ...sesion.usuario, nombre } } : sesion,
+    );
+  }
+
   cerrarSesion(destino = '/'): void {
     this.sesion.set(null);
     void this.router.navigateByUrl(destino);

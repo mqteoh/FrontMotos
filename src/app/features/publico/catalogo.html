@@ -2,8 +2,8 @@
   <h1>Motos disponibles</h1>
   @if (opciones(); as datos) {
     <p class="muted">
-      {{ datos.totalDisponibles }} motos listas para reservar en {{ datos.sedes.length }} sedes.
-      La reserva las aparta 7 días sin pago.
+      {{ datos.totalDisponibles }} motos listas para reservar en {{ datos.sedes.length }} sedes. La
+      reserva las aparta 7 días sin pago.
     </p>
   }
 </header>
@@ -21,7 +21,9 @@
       >
         {{ filtrosAbiertos() ? 'Ocultar filtros' : 'Mostrar filtros' }}
         @if (cantidadFiltros() > 0) {
-          <span class="dato">({{ cantidadFiltros() }} {{ cantidadFiltros() === 1 ? 'activo' : 'activos' }})</span>
+          <span class="dato"
+            >({{ cantidadFiltros() }} {{ cantidadFiltros() === 1 ? 'activo' : 'activos' }})</span
+          >
         }
       </button>
     </div>

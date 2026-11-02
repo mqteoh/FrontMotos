@@ -16,13 +16,7 @@ import { NombreIcono } from '../icono/iconos';
 import { Placa } from '../placa/placa';
 
 export type TipoColumna =
-  | 'texto'
-  | 'numero'
-  | 'pesos'
-  | 'fecha'
-  | 'fecha-hora'
-  | 'placa'
-  | 'estado';
+  'texto' | 'codigo' | 'numero' | 'pesos' | 'fecha' | 'fecha-hora' | 'placa' | 'estado';
 
 export interface Columna<T> {
   clave: keyof T & string;
@@ -36,8 +30,15 @@ interface Orden {
   direccion: 'ascending' | 'descending';
 }
 
+const COLUMNAS_NORMALES = 4;
 const NUMERICAS: readonly (TipoColumna | undefined)[] = ['numero', 'pesos'];
-const DATOS: readonly (TipoColumna | undefined)[] = ['numero', 'pesos', 'fecha', 'fecha-hora'];
+const DATOS: readonly (TipoColumna | undefined)[] = [
+  'codigo',
+  'numero',
+  'pesos',
+  'fecha',
+  'fecha-hora',
+];
 
 function comparar(a: unknown, b: unknown): number {
   if (a === null || a === undefined) {
@@ -56,9 +57,14 @@ function comparar(a: unknown, b: unknown): number {
   selector: 'app-tabla',
   imports: [NgTemplateOutlet, ChipEstado, Icono, Placa, PesosPipe, FechaPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'tabla-contenedor', '[class.tabla-contenedor--ancha]': 'ancha()' },
   template: `
     <table class="tabla">
-      <caption [class.sr-only]="tituloOculto()">{{ titulo() }}</caption>
+      <caption [class.sr-only]="tituloOculto()">
+        {{
+          titulo()
+        }}
+      </caption>
       <thead>
         <tr>
           @for (col of columnas(); track col.clave) {
@@ -85,6 +91,7 @@ function comparar(a: unknown, b: unknown): number {
                 [attr.data-etiqueta]="col.titulo"
                 [class.num]="esNumerica(col)"
                 [class.dato]="esDato(col)"
+                [class.tabla__codigo]="col.tipo === 'codigo'"
               >
                 @switch (col.tipo) {
                   @case ('placa') {
@@ -130,6 +137,9 @@ export class Tabla<T extends object> {
 
   protected readonly acciones = contentChild<TemplateRef<{ $implicit: T }>>('acciones');
   protected readonly orden = signal<Orden | null>(null);
+  protected readonly ancha = computed(
+    () => this.columnas().length + (this.acciones() ? 1 : 0) > COLUMNAS_NORMALES,
+  );
 
   protected readonly filasOrdenadas = computed(() => {
     const orden = this.orden();

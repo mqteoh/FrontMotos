@@ -36,18 +36,18 @@ describe('Búsqueda del catálogo', () => {
   });
 
   it('traduce la búsqueda a los parámetros del back', () => {
-    expect(
-      solicitudMotos({ ...BUSQUEDA_INICIAL, sede: 3, precioMin: 5000000, pagina: 2 }),
-    ).toEqual({
-      url: '/api/publico/motos',
-      params: { pagina: 1, tamano: 12, orden: 'MARCA', idSucursal: 3, precioMin: 5000000 },
-    });
+    expect(solicitudMotos({ ...BUSQUEDA_INICIAL, sede: 3, precioMin: 5000000, pagina: 2 })).toEqual(
+      {
+        url: '/api/publico/motos',
+        params: { pagina: 1, tamano: 12, orden: 'MARCA', idSucursal: 3, precioMin: 5000000 },
+      },
+    );
   });
 
   it('cuenta el rango de precio como un solo filtro', () => {
-    expect(
-      contarFiltros({ ...BUSQUEDA_INICIAL, marca: 'KTM', precioMin: 1, precioMax: 2 }),
-    ).toBe(2);
+    expect(contarFiltros({ ...BUSQUEDA_INICIAL, marca: 'KTM', precioMin: 1, precioMax: 2 })).toBe(
+      2,
+    );
   });
 
   it('muestra todas las páginas si son pocas y recorta con saltos si son muchas', () => {

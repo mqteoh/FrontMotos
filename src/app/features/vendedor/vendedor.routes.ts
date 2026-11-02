@@ -1,15 +1,49 @@
 import { Routes } from '@angular/router';
-import { AreaPendiente } from '../../shared/ui/area-pendiente/area-pendiente';
+import { conRol } from '../../core/auth/guards';
+import { LayoutVendedor } from './layout-vendedor';
 
 export default [
   {
     path: '',
-    title: 'Panel del vendedor',
-    component: AreaPendiente,
-    data: {
-      titulo: 'Panel del vendedor',
-      descripcion: 'Aquí estarán las reservas de la sede, la búsqueda de clientes y el registro de ventas.',
-      fase: 'F6',
-    },
+    component: LayoutVendedor,
+    children: [
+      {
+        path: '',
+        title: 'Reservas por vencer',
+        loadComponent: () => import('./inicio-vendedor'),
+      },
+      {
+        path: 'clientes',
+        title: 'Clientes',
+        loadComponent: () => import('./clientes'),
+      },
+      {
+        path: 'clientes/nuevo',
+        title: 'Registrar cliente',
+        loadComponent: () => import('./cliente-formulario'),
+      },
+      {
+        path: 'clientes/:idCliente',
+        title: 'Editar cliente',
+        loadComponent: () => import('./cliente-formulario'),
+      },
+      {
+        path: 'ventas',
+        title: 'Ventas',
+        loadComponent: () => import('./mis-ventas'),
+      },
+      {
+        path: 'ventas/moto',
+        title: 'Vender moto',
+        canActivate: [conRol('VENDEDOR')],
+        loadComponent: () => import('./venta-moto'),
+      },
+      {
+        path: 'ventas/accesorios',
+        title: 'Vender accesorios',
+        canActivate: [conRol('VENDEDOR')],
+        loadComponent: () => import('./venta-accesorios'),
+      },
+    ],
   },
 ] satisfies Routes;

@@ -45,8 +45,8 @@ describe('Rutas y navegación por rol', () => {
   });
 
   it.each([
-    ['VENDEDOR', '/vendedor', ['Ventas']],
-    ['TECNICO', '/tecnico', ['Taller']],
+    ['VENDEDOR', '/vendedor', ['Reservas', 'Clientes', 'Ventas']],
+    ['TECNICO', '/tecnico', ['Agenda', 'Mis trabajos', 'Historial']],
     ['DUENO', '/admin', ['Administración', 'Ventas', 'Taller']],
   ] as const)('%s entra a %s y ve solo su menú', async (rol, ruta, menu) => {
     guardarSesionDePrueba(rol);
@@ -70,8 +70,9 @@ describe('Rutas y navegación por rol', () => {
 
   it('el cliente usa el layout público con su cuenta en el menú', async () => {
     guardarSesionDePrueba('CLIENTE');
-    const { raiz } = await abrir('/cliente');
-    expect(raiz.querySelector('h1')?.textContent).toBe('Mi cuenta');
+    const { raiz, url } = await abrir('/cliente');
+    expect(url).toBe('/cliente/reservas');
+    expect(raiz.querySelector('h1')?.textContent).toBe('Mis reservas');
     expect(textos(raiz, '.cabecera__enlaces a')).toEqual([
       'Motos disponibles',
       'Accesorios',

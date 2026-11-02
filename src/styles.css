@@ -4,3 +4,7 @@
 @import './styles/componentes.css';
 @import './styles/layout.css';
 @import './styles/publico.css';
+@import './styles/cliente.css';
+@import './styles/vendedor.css';
+@import './styles/tecnico.css';
+@import './styles/admin.css';

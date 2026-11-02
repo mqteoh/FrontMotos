@@ -1,0 +1,81 @@
+<a class="enlace-volver" routerLink="/vendedor/clientes">
+  <app-icono nombre="atras" />Volver a clientes
+</a>
+<h1>{{ editando() ? 'Editar cliente' : 'Registrar cliente' }}</h1>
+
+@if (cliente.isLoading()) {
+  <app-esqueleto etiqueta="Cargando el cliente" [cantidad]="6" />
+} @else if (cliente.error()) {
+  <app-estado-error
+    titulo="No se pudo cargar el cliente."
+    [mensaje]="mensajeCarga()"
+    (reintentar)="cliente.reload()"
+  />
+} @else {
+  @if (datos()?.tieneCuentaWeb) {
+    <p class="muted">Este cliente tiene cuenta en la página; sus cambios también los verá ahí.</p>
+  }
+  <p class="muted">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
+  <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+    <fieldset class="grupo">
+      <legend>Datos personales</legend>
+      <app-campo etiqueta="Número de documento" [obligatorio]="true" [error]="error('documento')">
+        <input
+          appControl
+          class="dato"
+          type="text"
+          inputmode="numeric"
+          formControlName="documento"
+        />
+      </app-campo>
+      <div class="formulario__fila">
+        <app-campo etiqueta="Nombres" [obligatorio]="true" [error]="error('nombres')">
+          <input appControl type="text" formControlName="nombres" />
+        </app-campo>
+        <app-campo etiqueta="Apellidos" [obligatorio]="true" [error]="error('apellidos')">
+          <input appControl type="text" formControlName="apellidos" />
+        </app-campo>
+      </div>
+      <app-campo
+        etiqueta="Fecha de nacimiento"
+        [obligatorio]="true"
+        [error]="error('fechaNacimiento')"
+      >
+        <input appControl type="date" [max]="hoy" formControlName="fechaNacimiento" />
+      </app-campo>
+    </fieldset>
+
+    <fieldset class="grupo">
+      <legend>Dirección</legend>
+      <div class="formulario__fila">
+        <app-campo etiqueta="Ciudad" [obligatorio]="true" [error]="error('ciudad')">
+          <input appControl type="text" formControlName="ciudad" />
+        </app-campo>
+        <app-campo etiqueta="Barrio" [obligatorio]="true" [error]="error('barrio')">
+          <input appControl type="text" formControlName="barrio" />
+        </app-campo>
+      </div>
+      <div class="formulario__fila">
+        <app-campo etiqueta="Calle o avenida" [obligatorio]="true" [error]="error('calle')">
+          <input appControl type="text" formControlName="calle" />
+        </app-campo>
+        <app-campo etiqueta="Número" [obligatorio]="true" [error]="error('numeroDireccion')">
+          <input appControl type="text" formControlName="numeroDireccion" />
+        </app-campo>
+      </div>
+    </fieldset>
+
+    <app-lista-contactos [lista]="formulario.controls.telefonos" tipo="telefono" />
+    <app-lista-contactos [lista]="formulario.controls.correos" tipo="correo" />
+
+    @if (errorGeneral()) {
+      <p class="alerta" role="alert"><app-icono nombre="error" />{{ errorGeneral() }}</p>
+    }
+    <div class="acciones">
+      <button type="submit" class="btn btn--primario" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando…' : editando() ? 'Guardar cambios' : 'Registrar cliente' }}
+      </button>
+      <a class="btn btn--secundario" routerLink="/vendedor/clientes">Cancelar</a>
+    </div>
+  </form>
+}

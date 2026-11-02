@@ -83,7 +83,9 @@ import { Saltar } from './saltar';
           <div class="cabecera__sesion">
             <app-selector-tema />
             @if (usuario(); as usuario) {
-              <span class="cabecera__usuario"><app-icono nombre="usuario" />{{ usuario.nombre }}</span>
+              <span class="cabecera__usuario"
+                ><app-icono nombre="usuario" />{{ usuario.nombre }}</span
+              >
               <button type="button" class="btn btn--secundario" (click)="auth.cerrarSesion()">
                 <app-icono nombre="salir" />Cerrar sesión
               </button>

@@ -4,6 +4,7 @@ import { OrdenCatalogo } from './modelos';
 
 export const API_PUBLICO = '/api/publico';
 export const TAMANO_PAGINA = 12;
+export const PLACA = /^[A-Za-z]{3}[0-9]{2}[A-Za-z]$/;
 
 export const ORDENES: { valor: OrdenCatalogo; etiqueta: string }[] = [
   { valor: 'MARCA', etiqueta: 'Marca y modelo' },

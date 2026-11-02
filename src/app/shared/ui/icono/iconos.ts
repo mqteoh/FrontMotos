@@ -12,6 +12,7 @@ import handshake from '@phosphor-icons/core/regular/handshake.svg';
 import hourglass from '@phosphor-icons/core/regular/hourglass.svg';
 import info from '@phosphor-icons/core/regular/info.svg';
 import list from '@phosphor-icons/core/regular/list.svg';
+import magnifyingGlass from '@phosphor-icons/core/regular/magnifying-glass.svg';
 import moon from '@phosphor-icons/core/regular/moon.svg';
 import motorcycle from '@phosphor-icons/core/regular/motorcycle.svg';
 import receipt from '@phosphor-icons/core/regular/receipt.svg';
@@ -24,16 +25,22 @@ import table from '@phosphor-icons/core/regular/table.svg';
 import userCircle from '@phosphor-icons/core/regular/user-circle.svg';
 import warningCircle from '@phosphor-icons/core/regular/warning-circle.svg';
 import wrench from '@phosphor-icons/core/regular/wrench.svg';
+import pencilSimple from '@phosphor-icons/core/regular/pencil-simple.svg';
+import plus from '@phosphor-icons/core/regular/plus.svg';
+import trash from '@phosphor-icons/core/regular/trash.svg';
 import xCircle from '@phosphor-icons/core/regular/x-circle.svg';
 import x from '@phosphor-icons/core/regular/x.svg';
 
 export const ICONOS = {
   agendada: calendarCheck,
+  agregar: plus,
   atras: arrowLeft,
   cancelado: xCircle,
+  buscar: magnifyingGlass,
   caretAbajo: caretDown,
   caretArriba: caretUp,
   cerrar: x,
+  editar: pencilSimple,
   concretada: handshake,
   entrar: signIn,
   error: warningCircle,
@@ -44,6 +51,7 @@ export const ICONOS = {
   moto: motorcycle,
   ocultar: eyeSlash,
   ordenar: arrowsDownUp,
+  quitar: trash,
   reintentar: arrowClockwise,
   reloj: clock,
   salir: signOut,

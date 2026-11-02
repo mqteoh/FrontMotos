@@ -1,25 +1,42 @@
 import { Routes } from '@angular/router';
-import { AreaPendiente } from '../../shared/ui/area-pendiente/area-pendiente';
+import { LayoutCliente } from './layout-cliente';
 
 export default [
   {
     path: '',
-    title: 'Mi cuenta',
-    component: AreaPendiente,
-    data: {
-      titulo: 'Mi cuenta',
-      descripcion: 'Aquí estarán tus reservas, las reparaciones que agendes, tus compras y tu perfil.',
-      fase: 'F5',
-    },
-  },
-  {
-    path: 'reservar/:placa',
-    title: 'Confirmar reserva',
-    component: AreaPendiente,
-    data: {
-      titulo: 'Confirmar reserva',
-      descripcion: 'Aquí confirmarás la reserva de la moto y verás hasta qué día queda apartada.',
-      fase: 'F5',
-    },
+    component: LayoutCliente,
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'reservas' },
+      {
+        path: 'reservas',
+        title: 'Mis reservas',
+        loadComponent: () => import('./mis-reservas'),
+      },
+      {
+        path: 'reservar/:placa',
+        title: 'Confirmar reserva',
+        loadComponent: () => import('./confirmar-reserva'),
+      },
+      {
+        path: 'reparaciones',
+        title: 'Mis reparaciones',
+        loadComponent: () => import('./mis-reparaciones'),
+      },
+      {
+        path: 'reparaciones/agendar',
+        title: 'Agendar reparación',
+        loadComponent: () => import('./agendar-reparacion'),
+      },
+      {
+        path: 'compras',
+        title: 'Mis compras',
+        loadComponent: () => import('./mis-compras'),
+      },
+      {
+        path: 'perfil',
+        title: 'Mi perfil',
+        loadComponent: () => import('./perfil'),
+      },
+    ],
   },
 ] satisfies Routes;

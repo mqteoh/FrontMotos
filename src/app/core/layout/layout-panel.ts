@@ -20,7 +20,12 @@ import { Saltar } from './saltar';
         <ul class="panel__menu">
           @for (item of menu(); track item.ruta) {
             <li>
-              <a [routerLink]="item.ruta" routerLinkActive="activo" ariaCurrentWhenActive="page">
+              <a
+                [routerLink]="item.ruta"
+                routerLinkActive="activo"
+                ariaCurrentWhenActive="page"
+                [routerLinkActiveOptions]="{ exact: item.exacta ?? false }"
+              >
                 <app-icono [nombre]="item.icono" />{{ item.etiqueta }}
               </a>
             </li>
@@ -30,7 +35,9 @@ import { Saltar } from './saltar';
       <div class="panel__usuario">
         <p class="panel__nombre">
           <app-icono nombre="usuario" />
-          <span>{{ usuario()?.nombre }}<span class="panel__rol">{{ rol() }}</span></span>
+          <span
+            >{{ usuario()?.nombre }}<span class="panel__rol">{{ rol() }}</span></span
+          >
         </p>
         <div class="acciones">
           <app-selector-tema />
@@ -63,7 +70,12 @@ import { Saltar } from './saltar';
         <ul>
           @for (item of menu(); track item.ruta) {
             <li>
-              <a [routerLink]="item.ruta" routerLinkActive="activo" ariaCurrentWhenActive="page">
+              <a
+                [routerLink]="item.ruta"
+                routerLinkActive="activo"
+                ariaCurrentWhenActive="page"
+                [routerLinkActiveOptions]="{ exact: item.exacta ?? false }"
+              >
                 <app-icono [nombre]="item.icono" />{{ item.etiqueta }}
               </a>
             </li>

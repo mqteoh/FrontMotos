@@ -70,7 +70,9 @@
           </div>
           <div>
             <dt>Kilometraje</dt>
-            <dd class="dato">{{ moto.kilometraje | numero }}<span class="dato__unidad">km</span></dd>
+            <dd class="dato">
+              {{ moto.kilometraje | numero }}<span class="dato__unidad">km</span>
+            </dd>
           </div>
           <div>
             <dt>Marca</dt>
@@ -88,7 +90,8 @@
         <p class="ficha__sede">
           <app-icono nombre="sede" />
           <span>
-            <strong>{{ moto.sucursal.nombre }}</strong><br />
+            <strong>{{ moto.sucursal.nombre }}</strong
+            ><br />
             {{ direccion() }}
           </span>
         </p>

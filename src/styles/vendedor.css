@@ -1,0 +1,226 @@
+.cuenta__pagina--ancha {
+  max-width: 72rem;
+}
+
+.cuenta__cabecera > div > p {
+  margin: var(--space-05) 0 0;
+}
+
+.lista-contactos__titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.busqueda {
+  display: grid;
+  gap: var(--space-05);
+  max-width: 40rem;
+}
+
+.busqueda__fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.busqueda__fila .control {
+  flex: 1 1 14rem;
+  width: auto;
+}
+
+.reserva-sede__vence {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.reserva-sede--urgente {
+  border-color: var(--color-warning);
+}
+
+.reserva-sede--urgente .reserva-sede__vence {
+  color: var(--color-warning);
+}
+
+.reserva-sede--urgente .reserva-sede__vence .dato {
+  color: var(--color-text-muted);
+}
+
+.selector-cliente {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.selector-cliente > p {
+  margin: 0;
+}
+
+.selector-cliente__elegido {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-2);
+  border: 1.5px solid var(--color-accent-text);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.selector-cliente__elegido p {
+  margin: 0;
+}
+
+.selector-cliente__nombre {
+  font-weight: 700;
+}
+
+.selector-cliente__resultados {
+  display: grid;
+  gap: var(--space-05);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.selector-cliente__resultados li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.selector-cliente__resultados .dato {
+  margin-inline-start: var(--space-1);
+}
+
+.aviso-reserva {
+  display: flex;
+  gap: var(--space-1);
+  align-items: flex-start;
+  margin: 0;
+  padding: var(--space-2);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.aviso-reserva > app-icono {
+  margin-top: 0.15em;
+  color: var(--color-warning);
+}
+
+.etapa__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.etapa__titulo:focus {
+  outline: none;
+}
+
+.etapa__titulo:focus-visible {
+  outline: 2px solid var(--color-accent-text);
+  outline-offset: 4px;
+}
+
+.formulario--ancho {
+  max-width: 56rem;
+}
+
+.resumen-venta {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 40rem;
+  padding: var(--space-3);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.resumen-venta > * {
+  margin: 0;
+}
+
+.resumen-venta__total {
+  display: grid;
+  gap: var(--space-05);
+  justify-items: end;
+}
+
+.resumen-venta__total p {
+  margin: 0;
+}
+
+.resumen-venta__valor,
+.total-venta {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.resumen-venta__valor .dato,
+.total-venta .dato {
+  margin-inline-start: var(--space-1);
+  font-size: 1.5rem;
+}
+
+.items-venta {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item-venta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-2);
+  align-items: end;
+  padding: var(--space-2);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.item-venta__accesorio {
+  grid-column: 1 / -1;
+}
+
+.item-venta__subtotal {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.item-venta__subtotal .dato {
+  font-size: 1.125rem;
+}
+
+.item-venta__quitar {
+  justify-self: end;
+}
+
+@media (min-width: 768px) {
+  .item-venta {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1.5fr) auto;
+  }
+
+  .item-venta__accesorio {
+    grid-column: auto;
+  }
+
+  .item-venta__subtotal {
+    min-height: var(--alto-control);
+    align-content: end;
+  }
+}

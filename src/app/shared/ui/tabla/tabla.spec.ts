@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Columna, Tabla } from './tabla';
 
@@ -13,7 +13,7 @@ interface Fila {
   imports: [Tabla],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-tabla titulo="Motos" [columnas]="columnas" [filas]="filas" [claveFila]="clave">
+    <app-tabla titulo="Motos" [columnas]="columnas()" [filas]="filas" [claveFila]="clave">
       <ng-template #acciones let-fila>
         <button type="button">Vender {{ fila.placa }}</button>
       </ng-template>
@@ -21,11 +21,11 @@ interface Fila {
   `,
 })
 class Anfitrion {
-  columnas: Columna<Fila>[] = [
+  columnas = signal<Columna<Fila>[]>([
     { clave: 'placa', titulo: 'Placa', tipo: 'placa', ordenable: true },
     { clave: 'precio', titulo: 'Precio', tipo: 'pesos', ordenable: true },
     { clave: 'estado', titulo: 'Estado', tipo: 'estado' },
-  ];
+  ]);
   filas: Fila[] = [
     { id: 1, placa: 'HBN45C', precio: 27900000, estado: 'ACTIVA' },
     { id: 2, placa: 'GTK22F', precio: 15900000, estado: 'VENCIDA' },
@@ -69,6 +69,20 @@ describe('Tabla', () => {
     expect(celdas[2].textContent?.trim()).toBe('Activa');
     expect(celdas[3].getAttribute('data-etiqueta')).toBe('Acciones');
     expect(celdas[3].textContent?.trim()).toBe('Vender HBN45C');
-    expect(raiz.querySelector('caption')?.textContent).toBe('Motos');
+    expect(raiz.querySelector('caption')?.textContent?.trim()).toBe('Motos');
+  });
+
+  it('pasa a tarjetas antes cuando la tabla tiene más de cuatro columnas', async () => {
+    const { fixture, raiz } = await montar();
+    const tabla = () => raiz.querySelector('app-tabla');
+    expect(tabla()?.classList).toContain('tabla-contenedor');
+    expect(tabla()?.classList).not.toContain('tabla-contenedor--ancha');
+
+    fixture.componentInstance.columnas.update((columnas) => [
+      ...columnas,
+      { clave: 'id', titulo: 'N.º', tipo: 'numero' },
+    ]);
+    await fixture.whenStable();
+    expect(tabla()?.classList).toContain('tabla-contenedor--ancha');
   });
 });

@@ -1,0 +1,207 @@
+<a class="enlace-volver" [routerLink]="volver">
+  <app-icono nombre="atras" />Volver a {{ recurso.titulo.toLowerCase() }}
+</a>
+
+<h1>{{ editando ? 'Editar' : 'Registrar' }} {{ recurso.singular }}</h1>
+
+@if (editando && !item.hasValue() && item.isLoading()) {
+  <app-esqueleto [etiqueta]="'Cargando ' + recurso.singular" forma="texto" [cantidad]="4" />
+} @else if (editando && noExiste()) {
+  <app-estado-vacio
+    [titulo]="
+      'No encontramos ' + (recurso.genero === 'f' ? 'esa ' : 'ese ') + recurso.singular + '.'
+    "
+    mensaje="Puede que ya se haya eliminado. Vuelve a la tabla para ver los registros actuales."
+    [icono]="recurso.icono"
+  >
+    <a class="btn btn--primario" [routerLink]="volver"
+      >Volver a {{ recurso.titulo.toLowerCase() }}</a
+    >
+  </app-estado-vacio>
+} @else if (editando && item.error()) {
+  <app-estado-error
+    [titulo]="
+      'No se pudo cargar ' + (recurso.genero === 'f' ? 'la ' : 'el ') + recurso.singular + '.'
+    "
+    [mensaje]="mensajeCarga()"
+    (reintentar)="item.reload()"
+  />
+} @else {
+  @if (faltanListas()) {
+    <div class="alerta" role="alert">
+      <app-icono nombre="error" />
+      <p class="alerta__texto">No se pudieron cargar algunas listas de opciones.</p>
+      <button type="button" class="btn btn--secundario" (click)="recargarListas()">
+        <app-icono nombre="reintentar" />Reintentar
+      </button>
+    </div>
+  }
+
+  <form
+    class="formulario formulario--admin"
+    [formGroup]="formulario"
+    (ngSubmit)="guardar()"
+    novalidate
+  >
+    <p class="campo__ayuda">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
+    <div class="formulario-admin__campos">
+      @for (campo of visibles(); track campo.clave) {
+        @if (campo.tipo === 'telefonos' || campo.tipo === 'correos') {
+          <app-lista-contactos
+            class="formulario-admin__completo"
+            [lista]="lista(campo.clave)"
+            [tipo]="campo.tipo === 'telefonos' ? 'telefono' : 'correo'"
+          />
+        } @else if (editando && campo.fijoAlEditar) {
+          <div class="campo campo-fijo" role="group" [attr.aria-labelledby]="'fijo-' + campo.clave">
+            <p class="campo__etiqueta" [id]="'fijo-' + campo.clave">{{ campo.etiqueta }}</p>
+            @if (campo.placa) {
+              <app-placa [placa]="textoFijo(campo)" />
+            } @else {
+              <p class="campo-fijo__valor">{{ textoFijo(campo) }}</p>
+            }
+            <p class="campo__ayuda">{{ campo.fijoAlEditar }}</p>
+          </div>
+        } @else {
+          <app-campo
+            [class.formulario-admin__completo]="campo.completo"
+            [etiqueta]="campo.etiqueta"
+            [ayuda]="ayuda(campo)"
+            [error]="error(campo)"
+            [obligatorio]="obligatorio(campo)"
+          >
+            @switch (campo.tipo) {
+              @case ('seleccion') {
+                @let opcionesCampo = grupos(campo);
+                <select
+                  appControl
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                  [attr.aria-busy]="opcionesCampo ? null : 'true'"
+                >
+                  <option value="">
+                    {{
+                      opcionesCampo ? (campo.sinValor ?? 'Elige una opción') : 'Cargando opciones…'
+                    }}
+                  </option>
+                  @for (grupo of opcionesCampo ?? []; track grupo.nombre) {
+                    @if (grupo.nombre) {
+                      <optgroup [label]="grupo.nombre">
+                        @for (opcion of grupo.opciones; track opcion.valor) {
+                          <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+                        }
+                      </optgroup>
+                    } @else {
+                      @for (opcion of grupo.opciones; track opcion.valor) {
+                        <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+                      }
+                    }
+                  }
+                </select>
+              }
+              @case ('area') {
+                <textarea
+                  appControl
+                  rows="3"
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                  [attr.maxlength]="campo.maximo ?? null"
+                ></textarea>
+              }
+              @case ('numero') {
+                <input
+                  appControl
+                  class="dato"
+                  type="number"
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                  [attr.min]="campo.min ?? null"
+                  [attr.max]="campo.max ?? null"
+                  [attr.step]="campo.paso ?? null"
+                />
+              }
+              @case ('fecha') {
+                <input
+                  appControl
+                  type="date"
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                />
+              }
+              @case ('fecha-hora') {
+                <input
+                  appControl
+                  type="datetime-local"
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                />
+              }
+              @case ('correo') {
+                <input
+                  appControl
+                  type="email"
+                  inputmode="email"
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                  [attr.maxlength]="campo.maximo ?? null"
+                  [attr.autocomplete]="campo.autocompletar ?? null"
+                />
+              }
+              @case ('telefono') {
+                <input
+                  appControl
+                  class="dato"
+                  type="tel"
+                  inputmode="numeric"
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                  [attr.maxlength]="campo.maximo ?? null"
+                />
+              }
+              @case ('contrasena') {
+                <input
+                  appControl
+                  type="password"
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                  [attr.autocomplete]="campo.autocompletar ?? null"
+                />
+              }
+              @default {
+                <input
+                  appControl
+                  type="text"
+                  [class.control--placa]="campo.placa"
+                  [class.dato]="campo.placa"
+                  [formControlName]="campo.clave"
+                  [attr.name]="campo.clave"
+                  [attr.maxlength]="campo.maximo ?? null"
+                  [attr.autocomplete]="campo.autocompletar ?? null"
+                  [attr.autocapitalize]="campo.placa ? 'characters' : null"
+                />
+              }
+            }
+          </app-campo>
+        }
+      }
+    </div>
+
+    @if (errorGeneral(); as mensaje) {
+      <div #alerta class="alerta" role="alert" tabindex="-1">
+        <app-icono nombre="error" />
+        <p class="alerta__texto">{{ mensaje }}</p>
+      </div>
+    }
+
+    <div class="acciones">
+      <button type="submit" class="btn btn--primario" [disabled]="guardando()">
+        @if (guardando()) {
+          Guardando…
+        } @else {
+          {{ editando ? 'Guardar cambios' : 'Registrar ' + recurso.singular }}
+        }
+      </button>
+      <a class="btn btn--secundario" [routerLink]="volver">Cancelar</a>
+    </div>
+  </form>
+}

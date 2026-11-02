@@ -1,0 +1,83 @@
+<header class="cuenta__cabecera">
+  <div>
+    <h1>Agenda del taller</h1>
+    <p class="muted">{{ sede() }} · {{ hoy }}</p>
+  </div>
+</header>
+
+@if (agenda.isLoading()) {
+  <app-esqueleto etiqueta="Cargando la agenda" forma="filas" [cantidad]="4" />
+} @else if (agenda.error()) {
+  <app-estado-error
+    titulo="No se pudo cargar la agenda."
+    [mensaje]="mensajeError()"
+    (reintentar)="agenda.reload()"
+  />
+} @else {
+  @if (enCurso().length > 0) {
+    <section class="cuenta__seccion" aria-labelledby="titulo-en-curso">
+      <h2 id="titulo-en-curso">En curso contigo</h2>
+      <ul class="tarjetas-cuenta">
+        @for (reparacion of enCurso(); track reparacion.idReparacion) {
+          <li><app-tarjeta-reparacion [reparacion]="reparacion" /></li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (atrasadas().length > 0) {
+    <section class="cuenta__seccion" aria-labelledby="titulo-atrasadas">
+      <h2 id="titulo-atrasadas">Atrasadas</h2>
+      <p class="muted">Citas cuya fecha ya pasó y que nadie ha tomado.</p>
+      <ul class="tarjetas-cuenta">
+        @for (reparacion of atrasadas(); track reparacion.idReparacion) {
+          <li>
+            <app-tarjeta-reparacion [reparacion]="reparacion" [mostrarSede]="esDueno()" />
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <section class="cuenta__seccion" aria-labelledby="titulo-citas">
+    <h2 id="titulo-citas">Citas</h2>
+    <div class="vistas" role="group" aria-label="Periodo de la agenda">
+      @for (opcion of vistas; track opcion.valor) {
+        <button
+          type="button"
+          class="btn btn--secundario"
+          [attr.aria-pressed]="vista() === opcion.valor"
+          (click)="cambiarVista(opcion.valor)"
+        >
+          {{ opcion.etiqueta }}
+          <span class="dato">{{ conteo()[opcion.valor] }}</span>
+        </button>
+      }
+    </div>
+
+    @if (grupos().length === 0) {
+      <app-estado-vacio
+        [titulo]="mensajeVacio()"
+        mensaje="Las motos que los clientes agenden aparecerán aquí por día y hora."
+        icono="agendada"
+      />
+    } @else {
+      @for (grupo of grupos(); track grupo.dia) {
+        <div class="agenda__dia">
+          <h3>{{ grupo.titulo }}</h3>
+          <ul class="tarjetas-cuenta">
+            @for (reparacion of grupo.reparaciones; track reparacion.idReparacion) {
+              <li>
+                <app-tarjeta-reparacion
+                  [reparacion]="reparacion"
+                  [soloHora]="true"
+                  [mostrarSede]="esDueno()"
+                />
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    }
+  </section>
+}

@@ -6,8 +6,7 @@
 @if (errorGeneral()) {
   <p class="alerta" role="alert">
     <app-icono nombre="error" /><span
-      >{{ errorGeneral() }} Si ya tienes cuenta,
-      <a routerLink="/ingresar">inicia sesión</a>.</span
+      >{{ errorGeneral() }} Si ya tienes cuenta, <a routerLink="/ingresar">inicia sesión</a>.</span
     >
   </p>
 }
@@ -36,10 +35,22 @@
         [obligatorio]="true"
         [error]="error('fechaNacimiento')"
       >
-        <input appControl type="date" formControlName="fechaNacimiento" [max]="hoy" autocomplete="bday" />
+        <input
+          appControl
+          type="date"
+          formControlName="fechaNacimiento"
+          [max]="hoy"
+          autocomplete="bday"
+        />
       </app-campo>
       <app-campo etiqueta="Teléfono" [error]="error('telefono')">
-        <input appControl type="tel" inputmode="numeric" formControlName="telefono" autocomplete="tel" />
+        <input
+          appControl
+          type="tel"
+          inputmode="numeric"
+          formControlName="telefono"
+          autocomplete="tel"
+        />
       </app-campo>
     </div>
   </fieldset>
@@ -77,7 +88,13 @@
   <fieldset class="grupo">
     <legend>Acceso</legend>
     <app-campo etiqueta="Correo" [obligatorio]="true" [error]="error('correo')">
-      <input appControl type="email" inputmode="email" formControlName="correo" autocomplete="email" />
+      <input
+        appControl
+        type="email"
+        inputmode="email"
+        formControlName="correo"
+        autocomplete="email"
+      />
     </app-campo>
     <app-campo
       etiqueta="Contraseña"

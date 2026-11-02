@@ -55,3 +55,15 @@ export const fechaPasada: ValidatorFn = (control): ValidationErrors | null => {
 export function enfocarPrimerInvalido(raiz: HTMLElement): void {
   raiz.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
 }
+
+function ahoraIso(): string {
+  const ahora = new Date();
+  const hora = String(ahora.getHours()).padStart(2, '0');
+  const minutos = String(ahora.getMinutes()).padStart(2, '0');
+  return `${hoyIso()}T${hora}:${minutos}`;
+}
+
+export const noFutura: ValidatorFn = (control): ValidationErrors | null => {
+  const valor = control.value as string | null;
+  return valor && valor > ahoraIso().slice(0, valor.length) ? { noFutura: true } : null;
+};
