@@ -52,6 +52,7 @@ type FilaCliente = ClienteSede & { nombre: string; telefono: string; cuenta: str
       </div>
     </form>
 
+    <p class="sr-only" role="status">{{ anuncio() }}</p>
     @if (!solicitud()) {
       @if (consulta()) {
         <p class="alerta" role="alert">
@@ -133,6 +134,22 @@ export default class Clientes {
     return error instanceof HttpErrorResponse && error.status === 404;
   });
   protected readonly mensajeError = computed(() => mensajeDeError(this.clientes.error()));
+  protected readonly anuncio = computed(() => {
+    if (!this.solicitud() || this.clientes.isLoading()) {
+      return '';
+    }
+    if (this.sinDocumento()) {
+      return 'No hay un cliente con ese documento.';
+    }
+    if (this.clientes.error()) {
+      return '';
+    }
+    const cantidad = this.filas().length;
+    if (cantidad === 0) {
+      return 'Ningún cliente coincide con la búsqueda.';
+    }
+    return cantidad === 1 ? '1 cliente encontrado.' : `${cantidad} clientes encontrados.`;
+  });
   protected readonly filas = computed<FilaCliente[]>(() =>
     (valorDe(this.clientes) ?? []).map((cliente) => ({
       ...cliente,

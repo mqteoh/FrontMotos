@@ -19,6 +19,7 @@ import { Placa } from '../placa/placa';
       <p class="tarjeta__titulo" role="heading" [attr.aria-level]="nivelTitulo()">
         <a class="tarjeta__enlace" [routerLink]="['/motos', moto().placa]">
           {{ moto().marca }} {{ moto().modelo }}
+          <span class="sr-only">, placa {{ moto().placa }}</span>
         </a>
       </p>
       <dl class="tarjeta__datos">

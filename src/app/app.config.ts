@@ -1,16 +1,27 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { TitleStrategy, provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 import { apiUrlInterceptor } from './core/api/api-url.interceptor';
+import { redInterceptor } from './core/api/red.interceptor';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { FocoAlNavegar } from './core/layout/foco-al-navegar';
 import { TituloPorRuta } from './core/titulo/titulo-por-ruta';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor, apiUrlInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([authInterceptor, apiUrlInterceptor, redInterceptor]),
+    ),
     { provide: TitleStrategy, useClass: TituloPorRuta },
+    provideAppInitializer(() => inject(FocoAlNavegar).iniciar()),
   ],
 };

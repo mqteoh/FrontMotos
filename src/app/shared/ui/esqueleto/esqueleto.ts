@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+
+export const ESPERA_LENTA_MS = 8_000;
 
 @Component({
   selector: 'app-esqueleto',
@@ -43,6 +53,11 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
           }
         }
       </div>
+      <p class="esqueleto__aviso">
+        @if (lento()) {
+          Sigue cargando. El servidor está tardando más de lo habitual.
+        }
+      </p>
     </div>
   `,
 })
@@ -51,4 +66,10 @@ export class Esqueleto {
   readonly forma = input<'tarjetas' | 'filas' | 'texto'>('texto');
   readonly cantidad = input(3);
   protected readonly items = computed(() => Array.from({ length: this.cantidad() }, (_, i) => i));
+  protected readonly lento = signal(false);
+
+  constructor() {
+    const temporizador = setTimeout(() => this.lento.set(true), ESPERA_LENTA_MS);
+    inject(DestroyRef).onDestroy(() => clearTimeout(temporizador));
+  }
 }

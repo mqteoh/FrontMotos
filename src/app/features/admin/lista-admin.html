@@ -84,6 +84,8 @@
   </div>
 }
 
+<p class="sr-only" role="status">{{ anuncio() }}</p>
+
 @if (!datos.hasValue() && datos.isLoading()) {
   <app-esqueleto
     [etiqueta]="'Cargando ' + recurso.titulo.toLowerCase()"
@@ -129,7 +131,7 @@
     </app-estado-vacio>
   }
 } @else {
-  <p class="total" aria-live="polite">{{ conteo() }}</p>
+  <p class="total">{{ conteo() }}</p>
   <app-tabla
     [titulo]="recurso.titulo"
     [tituloOculto]="true"

@@ -1,11 +1,11 @@
 <header class="catalogo__cabecera">
   <h1>Motos disponibles</h1>
-  @if (opciones(); as datos) {
-    <p class="muted">
+  <p class="muted catalogo__resumen">
+    @if (opciones(); as datos) {
       {{ datos.totalDisponibles }} motos listas para reservar en {{ datos.sedes.length }} sedes. La
       reserva las aparta 7 días sin pago.
-    </p>
-  }
+    }
+  </p>
 </header>
 
 <div class="catalogo__cuerpo">

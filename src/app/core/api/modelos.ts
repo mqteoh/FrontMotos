@@ -360,3 +360,59 @@ export interface Suministro {
   repuesto: string;
   sucursal: string;
 }
+
+export interface ResumenGestion {
+  mes: string;
+  motosDisponibles: number;
+  reservasActivas: number;
+  reparacionesPendientes: number;
+  motosVendidasMes: number;
+  ventasMotosMes: number;
+  ventasAccesoriosMes: number;
+  clientes: number;
+  empleados: number;
+}
+
+export interface VentasVendedor {
+  idEmpleado: number;
+  vendedor: string;
+  sucursal: string;
+  motosVendidas: number;
+  totalMotos: number;
+  totalAccesorios: number;
+  total: number;
+}
+
+export interface VentasMes {
+  mes: number;
+  motosVendidas: number;
+  totalMotos: number;
+  ventasAccesorios: number;
+  totalAccesorios: number;
+  total: number;
+}
+
+export interface CostosSede {
+  idSucursal: number;
+  sucursal: string;
+  finalizadas: number;
+  manoObra: number;
+  repuestos: number;
+  total: number;
+}
+
+export interface RepuestosSede {
+  idSucursal: number;
+  sucursal: string;
+  idRepuesto: number;
+  repuesto: string;
+  recibidas: number;
+  usadas: number;
+}
+
+export interface DisponiblesSede {
+  idSucursal: number;
+  sucursal: string;
+  ciudad: string;
+  disponibles: number;
+}

@@ -47,7 +47,7 @@ describe('Rutas y navegación por rol', () => {
   it.each([
     ['VENDEDOR', '/vendedor', ['Reservas', 'Clientes', 'Ventas']],
     ['TECNICO', '/tecnico', ['Agenda', 'Mis trabajos', 'Historial']],
-    ['DUENO', '/admin', ['Administración', 'Ventas', 'Taller']],
+    ['DUENO', '/admin', ['Administración', 'Reportes', 'Ventas', 'Taller']],
   ] as const)('%s entra a %s y ve solo su menú', async (rol, ruta, menu) => {
     guardarSesionDePrueba(rol);
     const { raiz, url } = await abrir(ruta);

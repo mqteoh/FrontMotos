@@ -1,6 +1,5 @@
 import { Routes, UrlMatchResult, UrlSegment } from '@angular/router';
 import { conRol, soloInvitado } from './core/auth/guards';
-import { LayoutPanel } from './core/layout/layout-panel';
 import { LayoutPublico } from './core/layout/layout-publico';
 import { NoEncontrada } from './core/paginas/no-encontrada';
 import { SinPermiso } from './core/paginas/sin-permiso';
@@ -17,7 +16,7 @@ const soloDesarrollo: Routes = ngDevMode
     ]
   : [];
 
-const AREAS_PANEL = ['vendedor', 'tecnico', 'admin'];
+const AREAS_PANEL = ['vendedor', 'tecnico', 'admin', 'reportes'];
 
 export function areaDePanel(segmentos: UrlSegment[]): UrlMatchResult | null {
   return segmentos.length > 0 && AREAS_PANEL.includes(segmentos[0].path) ? { consumed: [] } : null;
@@ -26,7 +25,7 @@ export function areaDePanel(segmentos: UrlSegment[]): UrlMatchResult | null {
 export const routes: Routes = [
   {
     matcher: areaDePanel,
-    component: LayoutPanel,
+    loadComponent: () => import('./core/layout/layout-panel').then((m) => m.LayoutPanel),
     children: [
       {
         path: 'vendedor',
@@ -42,6 +41,12 @@ export const routes: Routes = [
         path: 'admin',
         canActivate: [conRol('DUENO')],
         loadChildren: () => import('./features/admin/admin.routes'),
+      },
+      {
+        path: 'reportes',
+        title: 'Reportes de gestión',
+        canActivate: [conRol('DUENO')],
+        loadComponent: () => import('./features/admin/reportes'),
       },
     ],
   },

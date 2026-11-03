@@ -29,6 +29,7 @@ let siguienteSelector = 0;
     <p class="campo__etiqueta" [id]="idTitulo">
       Cliente <span class="campo__obligatorio" aria-hidden="true">*</span>
     </p>
+    <p class="sr-only" role="status">{{ anuncio() }}</p>
     @if (cliente(); as elegido) {
       <div class="selector-cliente__elegido">
         <div>
@@ -43,7 +44,11 @@ let siguienteSelector = 0;
         @if (bloqueado()) {
           <p class="muted pequeno">{{ motivoBloqueo() }}</p>
         } @else {
-          <button type="button" class="btn btn--secundario" (click)="cambiar()">
+          <button
+            type="button"
+            class="btn btn--secundario selector-cliente__cambiar"
+            (click)="cambiar()"
+          >
             Cambiar<span class="sr-only"> de cliente</span>
           </button>
         }
@@ -72,11 +77,11 @@ let siguienteSelector = 0;
       }
       @if (consulta()) {
         @if (resultados.isLoading()) {
-          <p class="muted" role="status">Buscando clientes…</p>
+          <p class="muted">Buscando clientes…</p>
         } @else if (resultados.error() && !sinDocumento()) {
           <p class="alerta" role="alert"><app-icono nombre="error" />{{ mensajeError() }}</p>
         } @else if (lista().length === 0) {
-          <p class="muted" role="status">
+          <p class="muted">
             No hay clientes con «{{ consulta() }}».
             <a routerLink="/vendedor/clientes/nuevo" [queryParams]="parametrosNuevo()">
               Registrar cliente nuevo
@@ -124,6 +129,23 @@ export class SelectorCliente {
     return error instanceof HttpErrorResponse && error.status === 404;
   });
   protected readonly mensajeError = computed(() => mensajeDeError(this.resultados.error()));
+  protected readonly anuncio = computed(() => {
+    const elegido = this.cliente();
+    if (elegido) {
+      return `Cliente elegido: ${nombreCliente(elegido)}.`;
+    }
+    if (!this.consulta() || (this.resultados.error() && !this.sinDocumento())) {
+      return '';
+    }
+    if (this.resultados.isLoading()) {
+      return 'Buscando clientes…';
+    }
+    const cantidad = this.lista().length;
+    if (cantidad === 0) {
+      return `No hay clientes con «${this.consulta()}».`;
+    }
+    return cantidad === 1 ? '1 cliente encontrado.' : `${cantidad} clientes encontrados.`;
+  });
   protected readonly parametrosNuevo = computed(() => ({
     volver: this.router.url,
     ...(/^[0-9]+$/.test(this.consulta()) ? { documento: this.consulta() } : {}),
@@ -138,6 +160,13 @@ export class SelectorCliente {
   protected elegir(cliente: ClienteSede): void {
     this.cliente.set(cliente);
     this.consulta.set('');
+    afterNextRender(
+      () =>
+        this.elemento.nativeElement
+          .querySelector<HTMLElement>('.selector-cliente__cambiar')
+          ?.focus(),
+      { injector: this.injector },
+    );
   }
 
   protected cambiar(): void {

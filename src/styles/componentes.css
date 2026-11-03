@@ -23,6 +23,7 @@ app-saltar {
 
 .cabecera__fila {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
@@ -120,28 +121,10 @@ app-saltar {
 .grid-motos {
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-@media (min-width: 560px) {
-  .grid-motos {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .grid-motos {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1440px) {
-  .grid-motos {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
 }
 
 .tarjeta {
@@ -661,5 +644,11 @@ app-saltar {
 }
 
 .estado-datos--vacio .estado-datos__titulo app-icono {
+  color: var(--color-text-muted);
+}
+
+.esqueleto__aviso {
+  min-height: 1.5em;
+  margin: var(--space-2) 0 0;
   color: var(--color-text-muted);
 }

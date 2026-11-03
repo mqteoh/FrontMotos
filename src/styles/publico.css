@@ -106,16 +106,6 @@
   .catalogo__panel {
     display: grid;
   }
-
-  .catalogo .grid-motos {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1280px) {
-  .catalogo .grid-motos {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 479.98px) {
@@ -363,4 +353,14 @@
 
 .sede__motos .dato {
   font-size: 1.25rem;
+}
+
+.catalogo__resumen {
+  min-height: 3lh;
+}
+
+@media (min-width: 768px) {
+  .catalogo__resumen {
+    min-height: 1lh;
+  }
 }

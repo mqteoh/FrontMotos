@@ -127,6 +127,16 @@ export default class ListaAdmin {
     return `${cantidad} ${cantidad === 1 ? this.recurso.singular : this.recurso.titulo.toLowerCase()}`;
   });
 
+  protected readonly anuncio = computed(() => {
+    if (!this.datos.hasValue()) {
+      return '';
+    }
+    if (this.filas().length > 0) {
+      return `${this.conteo()}.`;
+    }
+    return this.hayFiltros() ? 'Ningún registro coincide con la búsqueda.' : this.recurso.vacio;
+  });
+
   protected readonly eliminando = signal<string | null>(null);
   protected readonly ejecutando = signal(false);
   protected readonly aviso = signal<string | null>(null);

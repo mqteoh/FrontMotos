@@ -23,12 +23,13 @@ export const INICIO_ROL: Record<Rol, string> = {
 };
 
 const ADMINISTRACION: ItemMenu = { etiqueta: 'Administración', ruta: '/admin', icono: 'tabla' };
+const REPORTES: ItemMenu = { etiqueta: 'Reportes', ruta: '/reportes', icono: 'grafico' };
 const VENTAS: ItemMenu = { etiqueta: 'Ventas', ruta: '/vendedor', icono: 'venta' };
 const TALLER: ItemMenu = { etiqueta: 'Taller', ruta: '/tecnico', icono: 'taller' };
 
 export const MENU_PANEL: Record<Rol, readonly ItemMenu[]> = {
   CLIENTE: [],
-  DUENO: [ADMINISTRACION, VENTAS, TALLER],
+  DUENO: [ADMINISTRACION, REPORTES, VENTAS, TALLER],
   VENDEDOR: [
     { etiqueta: 'Reservas', ruta: '/vendedor', icono: 'reloj', exacta: true },
     { etiqueta: 'Clientes', ruta: '/vendedor/clientes', icono: 'usuario' },

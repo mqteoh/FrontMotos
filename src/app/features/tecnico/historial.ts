@@ -55,6 +55,7 @@ import { TarjetaReparacion } from './tarjeta-reparacion';
       }
     </form>
 
+    <p class="sr-only" role="status">{{ anuncio() }}</p>
     @if (placa()) {
       @if (historial.isLoading()) {
         <app-esqueleto etiqueta="Cargando el historial" forma="filas" [cantidad]="3" />
@@ -109,6 +110,18 @@ export default class Historial {
     ),
   );
   protected readonly mensajeError = computed(() => mensajeDeError(this.historial.error()));
+  protected readonly anuncio = computed(() => {
+    if (!this.placa() || this.historial.isLoading() || this.historial.error()) {
+      return '';
+    }
+    const cantidad = this.lista().length;
+    if (cantidad === 0) {
+      return 'Esa moto no tiene reparaciones registradas.';
+    }
+    return cantidad === 1
+      ? '1 visita al taller encontrada.'
+      : `${cantidad} visitas al taller encontradas.`;
+  });
   protected readonly totalFinalizadas = computed(() =>
     this.lista()
       .filter((r) => r.estado === 'FINALIZADA')

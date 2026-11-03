@@ -4,8 +4,10 @@ import arrowsDownUp from '@phosphor-icons/core/regular/arrows-down-up.svg';
 import calendarCheck from '@phosphor-icons/core/regular/calendar-check.svg';
 import caretDown from '@phosphor-icons/core/regular/caret-down.svg';
 import caretUp from '@phosphor-icons/core/regular/caret-up.svg';
+import chartBar from '@phosphor-icons/core/regular/chart-bar.svg';
 import checkCircle from '@phosphor-icons/core/regular/check-circle.svg';
 import clock from '@phosphor-icons/core/regular/clock.svg';
+import downloadSimple from '@phosphor-icons/core/regular/download-simple.svg';
 import eyeSlash from '@phosphor-icons/core/regular/eye-slash.svg';
 import eye from '@phosphor-icons/core/regular/eye.svg';
 import handshake from '@phosphor-icons/core/regular/handshake.svg';
@@ -42,9 +44,11 @@ export const ICONOS = {
   cerrar: x,
   editar: pencilSimple,
   concretada: handshake,
+  descargar: downloadSimple,
   entrar: signIn,
   error: warningCircle,
   exito: checkCircle,
+  grafico: chartBar,
   info,
   luna: moon,
   menu: list,
