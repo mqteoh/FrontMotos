@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { EstadoReparacion, EstadoReserva } from '../../../core/api/modelos';
+import { EstadoMoto, EstadoReserva } from '../../../core/api/modelos';
 import { Icono } from '../icono/icono';
 import { NombreIcono } from '../icono/iconos';
 
@@ -11,14 +11,14 @@ interface Presentacion {
   tono: Tono;
 }
 
-const ESTADOS: Record<EstadoReserva | EstadoReparacion, Presentacion> = {
+const ESTADOS: Record<EstadoReserva | EstadoMoto, Presentacion> = {
   ACTIVA: { texto: 'Activa', icono: 'reloj', tono: 'activo' },
   CONCRETADA: { texto: 'Concretada', icono: 'concretada', tono: 'neutro' },
   CANCELADA: { texto: 'Cancelada', icono: 'cancelado', tono: 'peligro' },
   VENCIDA: { texto: 'Vencida', icono: 'vencido', tono: 'neutro' },
-  AGENDADA: { texto: 'Agendada', icono: 'agendada', tono: 'activo' },
-  EN_PROCESO: { texto: 'En proceso', icono: 'taller', tono: 'proceso' },
-  FINALIZADA: { texto: 'Finalizada', icono: 'exito', tono: 'neutro' },
+  DISPONIBLE: { texto: 'Disponible', icono: 'moto', tono: 'activo' },
+  RESERVADA: { texto: 'Reservada', icono: 'reloj', tono: 'proceso' },
+  VENDIDA: { texto: 'Vendida', icono: 'concretada', tono: 'neutro' },
 };
 
 @Component({
@@ -32,7 +32,7 @@ export class ChipEstado {
   readonly estado = input.required<string>();
   protected readonly presentacion = computed<Presentacion>(
     () =>
-      ESTADOS[this.estado() as EstadoReserva | EstadoReparacion] ?? {
+      ESTADOS[this.estado() as EstadoReserva | EstadoMoto] ?? {
         texto: this.estado(),
         icono: 'info',
         tono: 'neutro',

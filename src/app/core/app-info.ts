@@ -1,1 +1,1 @@
-export const NOMBRE_APP = 'Concesionario de motos';
+export const NOMBRE_APP = 'MotoMaster';

@@ -1,0 +1,118 @@
+<header class="cuenta__cabecera">
+  <div>
+    <h1>Reparaciones del taller</h1>
+    <p class="muted">{{ sede() }}</p>
+  </div>
+  <a class="btn btn--primario" routerLink="/tecnico/nueva">
+    <app-icono nombre="agregar" />Registrar reparación
+  </a>
+</header>
+
+<div class="filtros-admin" role="search" aria-label="Filtrar reparaciones">
+  @if (esDueno()) {
+    <div class="campo">
+      <label class="campo__etiqueta" for="filtro-sede">Sede</label>
+      <select id="filtro-sede" class="control" (change)="filtrar('sede', $event)">
+        <option value="" [selected]="!idSede()">Todas las sedes</option>
+        @for (opcion of listaSedes(); track opcion.idSucursal) {
+          <option [value]="opcion.idSucursal" [selected]="'' + opcion.idSucursal === idSede()">
+            {{ opcion.nombre }}
+          </option>
+        }
+      </select>
+    </div>
+  } @else {
+    <div class="campo">
+      <span class="campo__etiqueta" id="etiqueta-vista">Ver</span>
+      <div class="vistas" role="group" aria-labelledby="etiqueta-vista">
+        <button
+          type="button"
+          class="btn btn--secundario"
+          [attr.aria-pressed]="!mias()"
+          (click)="verMias(false)"
+        >
+          Toda la sede
+        </button>
+        <button
+          type="button"
+          class="btn btn--secundario"
+          [attr.aria-pressed]="mias()"
+          (click)="verMias(true)"
+        >
+          Solo en las que participé
+        </button>
+      </div>
+    </div>
+  }
+  <div class="campo">
+    <label class="campo__etiqueta" for="filtro-desde">Desde</label>
+    <input
+      id="filtro-desde"
+      class="control dato"
+      type="date"
+      [value]="desde()"
+      [attr.aria-invalid]="errorRango() ? 'true' : null"
+      [attr.aria-describedby]="errorRango() ? 'error-rango' : null"
+      (change)="filtrar('desde', $event)"
+    />
+  </div>
+  <div class="campo">
+    <label class="campo__etiqueta" for="filtro-hasta">Hasta</label>
+    <input
+      id="filtro-hasta"
+      class="control dato"
+      type="date"
+      [value]="hasta()"
+      (change)="filtrar('hasta', $event)"
+    />
+  </div>
+</div>
+@if (errorRango()) {
+  <p id="error-rango" class="campo__error"><app-icono nombre="error" />{{ errorRango() }}</p>
+}
+@if (hayFiltros()) {
+  <div class="acciones">
+    <button type="button" class="btn btn--secundario" (click)="quitarFiltros()">
+      <app-icono nombre="cerrar" />Quitar filtros
+    </button>
+  </div>
+}
+
+<p class="sr-only" role="status">{{ anuncio() }}</p>
+@if (errorRango()) {
+  <p class="muted">Corrige las fechas para ver las reparaciones.</p>
+} @else if (datos.isLoading()) {
+  <app-esqueleto etiqueta="Cargando las reparaciones" forma="filas" [cantidad]="4" />
+} @else if (datos.error()) {
+  <app-estado-error
+    titulo="No se pudieron cargar las reparaciones."
+    [mensaje]="mensajeError()"
+    (reintentar)="datos.reload()"
+  />
+} @else if (lista().length === 0) {
+  @if (hayFiltros()) {
+    <app-estado-vacio
+      titulo="Ninguna reparación coincide con los filtros."
+      mensaje="Cambia las fechas o quita los filtros para ver todas."
+      icono="buscar"
+    />
+  } @else {
+    <app-estado-vacio
+      titulo="Aún no hay reparaciones registradas."
+      mensaje="Cuando termines un trabajo, regístralo con la placa, los técnicos y los repuestos usados."
+      icono="taller"
+    >
+      <a class="btn btn--primario" routerLink="/tecnico/nueva">Registrar reparación</a>
+    </app-estado-vacio>
+  }
+} @else {
+  <p class="muted">
+    {{ lista().length }} {{ lista().length === 1 ? 'reparación' : 'reparaciones' }} ·
+    <span class="dato">{{ total() | pesos }}</span> entre mano de obra y repuestos
+  </p>
+  <ul class="tarjetas-cuenta">
+    @for (reparacion of lista(); track reparacion.idReparacion) {
+      <li><app-tarjeta-reparacion [reparacion]="reparacion" [mostrarSede]="esDueno()" /></li>
+    }
+  </ul>
+}

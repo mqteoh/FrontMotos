@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Icono } from '../../shared/ui/icono/icono';
+import { Logo } from '../../shared/ui/logo/logo';
 import { SelectorTema } from '../../shared/ui/selector-tema/selector-tema';
 import { NOMBRE_APP } from '../app-info';
 import { AuthService } from '../auth/auth.service';
@@ -9,13 +10,13 @@ import { Saltar } from './saltar';
 
 @Component({
   selector: 'app-layout-panel',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icono, SelectorTema, Saltar],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icono, Logo, SelectorTema, Saltar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'panel' },
   template: `
     <app-saltar />
     <aside class="panel__lateral">
-      <a class="marca" [routerLink]="inicio()"><app-icono nombre="moto" />{{ nombre }}</a>
+      <a class="marca" [routerLink]="inicio()"><app-logo />{{ nombre }}</a>
       <nav aria-label="Módulos del panel">
         <ul class="panel__menu">
           @for (item of menu(); track item.ruta) {
@@ -48,7 +49,7 @@ import { Saltar } from './saltar';
       </div>
     </aside>
     <header class="panel__superior">
-      <a class="marca" [routerLink]="inicio()"><app-icono nombre="moto" />{{ nombre }}</a>
+      <a class="marca" [routerLink]="inicio()"><app-logo />{{ nombre }}</a>
       <div class="panel__acciones-superior">
         <app-selector-tema />
         <button

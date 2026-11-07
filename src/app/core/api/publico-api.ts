@@ -100,11 +100,6 @@ export function solicitudMotos(busqueda: Busqueda): HttpResourceRequest {
   return { url: `${API_PUBLICO}/motos`, params };
 }
 
-export function direccionSede(sede: {
-  calle: string;
-  numeroDireccion: string;
-  barrio: string;
-  ciudad: string;
-}): string {
-  return `${sede.calle} # ${sede.numeroDireccion}, ${sede.barrio}, ${sede.ciudad}`;
+export function direccionSede(sede: { calle: string; barrio: string; ciudad: string }): string {
+  return `${sede.calle}, ${sede.barrio}, ${sede.ciudad}`;
 }

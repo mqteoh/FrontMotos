@@ -6,9 +6,9 @@
   --color-input-border: #737b6e;
   --color-text: #f1f3ee;
   --color-text-muted: #a9b0a4;
-  --color-accent: #7dc242;
-  --color-on-accent: #10130e;
-  --color-accent-text: #8fd155;
+  --color-accent: #e01b24;
+  --color-on-accent: #ffffff;
+  --color-accent-text: #ff5a5f;
   --color-danger: #ff7a6e;
   --color-warning: #f2b33d;
   --color-placa: #f2c230;
@@ -61,9 +61,9 @@
   --color-input-border: #7c8577;
   --color-text: #161a14;
   --color-text-muted: #545c50;
-  --color-accent: #3e7a12;
+  --color-accent: #c8102e;
   --color-on-accent: #ffffff;
-  --color-accent-text: #356b0e;
+  --color-accent-text: #b00d23;
   --color-danger: #b3261e;
   --color-warning: #8a5a00;
   --color-scrim: rgb(22 26 20 / 0.55);

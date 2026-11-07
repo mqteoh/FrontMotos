@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { mensajeDeError } from './errores';
-import { OrigenMoto, Suministro, TipoEmpleado } from './modelos';
+import { EstadoMoto, Suministro, TipoEmpleado } from './modelos';
 
 export const API_ADMIN = '/api/admin';
 
@@ -10,9 +10,10 @@ export const TIPOS_EMPLEADO: Record<TipoEmpleado, string> = {
   TECNICO: 'Técnico',
 };
 
-export const ORIGENES_MOTO: Record<OrigenMoto, string> = {
-  INVENTARIO: 'Inventario del concesionario',
-  EXTERNA: 'Moto de un cliente',
+export const ESTADOS_MOTO: Record<EstadoMoto, string> = {
+  DISPONIBLE: 'Disponible',
+  RESERVADA: 'Reservada',
+  VENDIDA: 'Vendida',
 };
 
 const CON_DEPENDIENTES = 'No se puede eliminar porque otros registros dependen de él.';

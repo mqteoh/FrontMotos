@@ -1,4 +1,6 @@
-<a class="enlace-volver" routerLink="/tecnico"><app-icono nombre="atras" />Volver a la agenda</a>
+<a class="enlace-volver" routerLink="/tecnico"
+  ><app-icono nombre="atras" />Volver a las reparaciones</a
+>
 
 @if (reparacion.isLoading() && !datos()) {
   <app-esqueleto etiqueta="Cargando la reparación" [cantidad]="6" />
@@ -12,7 +14,14 @@
   <header class="reparacion__cabecera">
     <app-placa [placa]="datos.placa" [grande]="true" />
     <h1 id="titulo-reparacion" tabindex="-1">Reparación N.º {{ datos.idReparacion }}</h1>
-    <app-chip-estado [estado]="datos.estado" />
+    @if (puedeCorregir()) {
+      <a
+        class="btn btn--secundario reparacion__corregir"
+        [routerLink]="['/tecnico/reparaciones', datos.idReparacion, 'editar']"
+      >
+        <app-icono nombre="editar" />Corregir
+      </a>
+    }
   </header>
 
   <dl class="resumen">
@@ -21,213 +30,69 @@
       <dd>{{ datos.marca }} {{ datos.modelo }}</dd>
     </div>
     <div>
-      <dt>Cliente</dt>
-      <dd>{{ datos.cliente }}</dd>
+      <dt>Fecha</dt>
+      <dd class="dato">{{ datos.fecha | fecha }}</dd>
     </div>
-    <div>
-      <dt>Cita</dt>
-      <dd class="dato">{{ datos.fechaAgendada | fecha: true }}</dd>
-    </div>
-    <div>
-      <dt>Sede</dt>
-      <dd>{{ datos.sucursal }}</dd>
-    </div>
-    <div>
-      <dt>Técnico</dt>
-      <dd>{{ datos.tecnico ?? 'Sin asignar' }}</dd>
-    </div>
-    @if (datos.kilometrajeIngreso !== null) {
+    @if (datos.cliente) {
       <div>
-        <dt>Kilometraje</dt>
-        <dd class="dato">
-          {{ datos.kilometrajeIngreso | numero }}<span class="dato__unidad">km</span>
-        </dd>
+        <dt>Cliente</dt>
+        <dd>{{ datos.cliente }}</dd>
       </div>
     }
-    @if (datos.fechaFinalizacion) {
+    @if (datos.sucursal) {
       <div>
-        <dt>Finalizada</dt>
-        <dd class="dato">{{ datos.fechaFinalizacion | fecha: true }}</dd>
+        <dt>Sede</dt>
+        <dd>{{ datos.sucursal }}</dd>
       </div>
     }
+    <div>
+      <dt>{{ datos.tecnicos.length === 1 ? 'Técnico' : 'Técnicos' }}</dt>
+      <dd>{{ tecnicos() }}</dd>
+    </div>
   </dl>
 
-  <section class="cuenta__seccion" aria-labelledby="titulo-solicitud">
-    <h2 id="titulo-solicitud">Lo que pidió el cliente</h2>
+  <section class="cuenta__seccion" aria-labelledby="titulo-trabajo">
+    <h2 id="titulo-trabajo">Trabajo realizado</h2>
     <p class="tarjeta-cuenta__texto">{{ datos.descripcion }}</p>
   </section>
 
-  @if (errorAccion()) {
-    <div id="error-accion" class="alerta" role="alert" tabindex="-1">
-      <app-icono nombre="error" /><span>{{ errorAccion() }}</span>
-    </div>
-  }
-
-  @if (puedeTomar()) {
-    <div class="acciones">
-      <button type="button" class="btn btn--primario" [disabled]="ocupado()" (click)="tomar()">
-        {{ ocupado() ? 'Tomando…' : 'Tomar reparación' }}
-      </button>
-    </div>
-  } @else if (otroTecnico()) {
-    <p class="muted">La está atendiendo {{ otroTecnico() }}; solo esa persona puede modificarla.</p>
-  }
-
-  @if (trabajando() || datos.repuestos.length > 0) {
-    <section class="cuenta__seccion" aria-labelledby="titulo-repuestos">
-      <h2 id="titulo-repuestos" tabindex="-1">Repuestos usados</h2>
-      @if (datos.repuestos.length === 0) {
-        <p class="muted">Aún no registras repuestos. Búscalos abajo.</p>
-      } @else {
-        <ul class="repuestos-usados">
-          @for (uso of datos.repuestos; track uso.idRepuesto) {
-            <li>
-              <span class="repuestos-usados__nombre">
-                {{ uso.nombre }}
-                <span class="muted pequeno">{{ uso.categoria }}</span>
-              </span>
-              <span class="dato">{{ uso.cantidad }} × {{ uso.precioUnitario | pesos }}</span>
-              <span class="dato repuestos-usados__subtotal">{{ uso.subtotal | pesos }}</span>
-              @if (trabajando()) {
-                <button
-                  type="button"
-                  class="btn btn--icono"
-                  [attr.aria-label]="'Quitar ' + uso.nombre"
-                  [disabled]="ocupado()"
-                  (click)="quitar(uso.idRepuesto, uso.nombre)"
-                >
-                  <app-icono nombre="quitar" />
-                </button>
-              }
-            </li>
-          }
-        </ul>
-        <p class="total">
-          Repuestos <span class="dato">{{ datos.costoRepuestos ?? 0 | pesos }}</span>
-        </p>
-      }
-    </section>
-  }
-
-  @if (trabajando()) {
-    <section class="cuenta__seccion" aria-labelledby="titulo-agregar">
-      <h2 id="titulo-agregar">Agregar repuesto</h2>
-      <form
-        class="busqueda"
-        role="search"
-        aria-label="Buscar repuestos"
-        (submit)="buscar($event, campo.value)"
-      >
-        <label class="campo__etiqueta" for="buscar-repuesto">Nombre del repuesto</label>
-        <div class="busqueda__fila">
-          <input #campo id="buscar-repuesto" class="control" type="search" autocomplete="off" />
-          <button type="submit" class="btn btn--secundario">
-            <app-icono nombre="buscar" />Buscar
-          </button>
-        </div>
-      </form>
-      @if (consulta()) {
-        @if (repuestos.isLoading()) {
-          <p class="muted" role="status">Buscando repuestos…</p>
-        } @else if (repuestos.error()) {
-          <p class="alerta" role="alert"><app-icono nombre="error" />{{ errorRepuestos() }}</p>
-        } @else if (resultados().length === 0) {
-          <p class="muted" role="status">No hay repuestos con «{{ consulta() }}».</p>
-        } @else {
-          <ul class="repuestos-encontrados" aria-label="Repuestos encontrados">
-            @for (repuesto of resultados(); track repuesto.idRepuesto) {
-              <li>
-                <span class="repuestos-usados__nombre">
-                  {{ repuesto.nombre }}
-                  <span class="muted pequeno">
-                    {{ repuesto.categoria }} ·
-                    <span class="dato">{{ repuesto.precio | pesos }}</span>
-                  </span>
-                </span>
-                <label class="sr-only" [for]="'cantidad-' + repuesto.idRepuesto">
-                  Cantidad de {{ repuesto.nombre }}
-                </label>
-                <input
-                  #cantidad
-                  class="control dato repuestos-encontrados__cantidad"
-                  type="number"
-                  inputmode="numeric"
-                  min="1"
-                  max="99"
-                  [id]="'cantidad-' + repuesto.idRepuesto"
-                  [value]="cantidadUsada(repuesto.idRepuesto) ?? 1"
-                />
-                <button
-                  type="button"
-                  class="btn btn--secundario"
-                  [disabled]="ocupado()"
-                  (click)="agregar(repuesto, cantidad.value)"
-                >
-                  {{ cantidadUsada(repuesto.idRepuesto) === null ? 'Agregar' : 'Actualizar' }}
-                  <span class="sr-only"> {{ repuesto.nombre }}</span>
-                </button>
-              </li>
-            }
-          </ul>
+  <section class="cuenta__seccion" aria-labelledby="titulo-repuestos">
+    <h2 id="titulo-repuestos">Repuestos usados</h2>
+    @if (datos.repuestos.length === 0) {
+      <p class="muted">No se usaron repuestos en esta reparación.</p>
+    } @else {
+      <ul class="repuestos-usados">
+        @for (uso of datos.repuestos; track uso.idRepuesto) {
+          <li>
+            <span class="repuestos-usados__nombre">
+              {{ uso.nombre }}
+              <span class="muted pequeno">{{ uso.categoria }}</span>
+            </span>
+            <span class="dato">{{ uso.cantidad }} × {{ uso.precioUnitario | pesos }}</span>
+            <span class="dato repuestos-usados__subtotal">{{ uso.subtotal | pesos }}</span>
+          </li>
         }
-      }
-    </section>
+      </ul>
+    }
+  </section>
 
-    <section class="cuenta__seccion" aria-labelledby="titulo-cierre">
-      <h2 id="titulo-cierre">Cerrar reparación</h2>
-      <form class="formulario" [formGroup]="cierre" (ngSubmit)="cerrar()" novalidate>
-        <app-campo
-          etiqueta="Costo de la mano de obra en pesos"
-          ayuda="Obligatorio para cerrar. Los repuestos se suman aparte."
-          [obligatorio]="true"
-          [error]="errorCierre('costo')"
-        >
-          <input
-            appControl
-            class="dato"
-            type="number"
-            inputmode="numeric"
-            min="0"
-            step="1000"
-            formControlName="costo"
-          />
-        </app-campo>
-        <app-campo
-          etiqueta="Trabajo realizado"
-          ayuda="Opcional. Reemplaza la descripción que dejó el cliente."
-          [error]="errorCierre('descripcion')"
-        >
-          <textarea appControl rows="3" maxlength="255" formControlName="descripcion"></textarea>
-        </app-campo>
-        <p class="total-venta">
-          Total estimado <span class="dato">{{ totalEstimado() | pesos }}</span>
-        </p>
-        <div class="acciones">
-          <button type="submit" class="btn btn--primario" [disabled]="ocupado()">
-            Cerrar reparación
-          </button>
-        </div>
-      </form>
-    </section>
-  } @else if (datos.estado === 'FINALIZADA') {
-    <section class="cuenta__seccion" aria-labelledby="titulo-costos">
-      <h2 id="titulo-costos">Costos</h2>
-      <dl class="resumen">
-        <div>
-          <dt>Mano de obra</dt>
-          <dd class="dato">{{ datos.costoManoObra ?? 0 | pesos }}</dd>
-        </div>
-        <div>
-          <dt>Repuestos</dt>
-          <dd class="dato">{{ datos.costoRepuestos ?? 0 | pesos }}</dd>
-        </div>
-        <div>
-          <dt>Total</dt>
-          <dd class="dato">{{ datos.costoTotal ?? 0 | pesos }}</dd>
-        </div>
-      </dl>
-    </section>
-  }
+  <section class="cuenta__seccion" aria-labelledby="titulo-costos">
+    <h2 id="titulo-costos">Costos</h2>
+    <dl class="resumen">
+      <div>
+        <dt>Mano de obra</dt>
+        <dd class="dato">{{ datos.costoManoObra | pesos }}</dd>
+      </div>
+      <div>
+        <dt>Repuestos</dt>
+        <dd class="dato">{{ datos.costoRepuestos | pesos }}</dd>
+      </div>
+      <div>
+        <dt>Total</dt>
+        <dd class="dato">{{ datos.costoTotal | pesos }}</dd>
+      </div>
+    </dl>
+  </section>
 
   <a class="enlace-accion" routerLink="/tecnico/historial" [queryParams]="{ placa: datos.placa }">
     Ver el historial de la moto {{ datos.placa }}

@@ -151,8 +151,7 @@ describe('Vitrina', () => {
         nombre: 'Sede Chapinero',
         ciudad: 'Bogotá',
         barrio: 'Chapinero',
-        calle: 'Calle 63',
-        numeroDireccion: '13-45',
+        calle: 'Calle 63 # 13-45',
       },
     };
 

@@ -178,7 +178,7 @@ export default class VentaMoto {
       .subscribe({
         next: (venta) => {
           this.toast.exito(
-            `Venta N.º ${venta.idVentaMoto} registrada: ${venta.marca} ${venta.modelo} para ${venta.cliente}.`,
+            `Venta registrada: ${venta.marca} ${venta.modelo} ${venta.placa} para ${venta.cliente}.`,
           );
           void this.router.navigateByUrl(moto.reservada ? '/vendedor' : '/vendedor/ventas');
         },

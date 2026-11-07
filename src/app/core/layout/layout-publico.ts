@@ -18,6 +18,7 @@ import {
 } from '@angular/router';
 import { filter } from 'rxjs';
 import { Icono } from '../../shared/ui/icono/icono';
+import { Logo } from '../../shared/ui/logo/logo';
 import { SelectorTema } from '../../shared/ui/selector-tema/selector-tema';
 import { NOMBRE_APP } from '../app-info';
 import { AuthService } from '../auth/auth.service';
@@ -26,14 +27,14 @@ import { Saltar } from './saltar';
 
 @Component({
   selector: 'app-layout-publico',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icono, SelectorTema, Saltar],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icono, Logo, SelectorTema, Saltar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'cerrarMenuConEscape()' },
   template: `
     <app-saltar />
     <header class="cabecera">
       <div class="contenedor cabecera__fila">
-        <a class="marca" routerLink="/"><app-icono nombre="moto" />{{ nombre }}</a>
+        <a class="marca" routerLink="/"><app-logo />{{ nombre }}</a>
         <button
           #alternar
           type="button"

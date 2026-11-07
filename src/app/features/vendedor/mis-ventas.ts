@@ -161,6 +161,6 @@ export default class MisVentas {
     { clave: 'pago', titulo: 'Pago' },
     { clave: 'valorTotal', titulo: 'Valor', tipo: 'pesos', ordenable: true },
   ]);
-  protected readonly claveMoto = (venta: VentaMoto) => venta.idVentaMoto;
+  protected readonly claveMoto = (venta: VentaMoto) => venta.placa;
   protected readonly claveAccesorio = (venta: VentaAccesorio) => venta.idVentaAccesorio;
 }

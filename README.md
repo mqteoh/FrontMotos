@@ -10,9 +10,9 @@ Consume la API de [BackMotos](https://github.com/mqteoh/BackMotos). En producci�
 |---|---|---|
 | Vitrina pública | `/`, `/motos/:placa`, `/accesorios`, `/sedes` | Catálogo con filtros, ficha de cada moto, accesorios y sedes |
 | Acceso | `/ingresar`, `/registro` | Inicio de sesión y creación de cuenta de cliente |
-| Cliente | `/cliente` | Reservas, agendar reparaciones en tres pasos, compras y perfil |
+| Cliente | `/cliente` | Reservas, compras, reparaciones de sus motos (solo consulta) y perfil |
 | Vendedor | `/vendedor` | Reservas por vencer, clientes, venta de motos y de accesorios |
-| Técnico | `/tecnico` | Agenda del taller, trabajos asignados, historial por placa y cierre de reparaciones |
+| Técnico | `/tecnico` | Reparaciones de la sede con filtros, registro y corrección de reparaciones con técnicos y repuestos, e historial por placa |
 | Dueño | `/admin`, `/reportes` | Las 14 tablas del negocio y los reportes de gestión con gráficos y CSV; también entra a ventas y taller |
 
 ## Tecnologías
@@ -61,12 +61,14 @@ src/app
 src/styles     Tokens de diseño y estilos por área
 ```
 
+El diagrama de clases del front está en la carpeta de documentación (`14_Diagrama_Clases_Front.drawio`).
+
 ## Diseño y accesibilidad
 
-- La dirección visual está en `design.md` de la documentación del proyecto: tema oscuro y claro, acento verde y la placa amarilla como motivo.
+- La dirección visual está en `design.md` de la documentación del proyecto: tema oscuro y claro, acento rojo deportivo que combina con el logo de MotoMaster y la placa amarilla como motivo.
 - Toda vista con datos tiene estado de carga, vacío y error.
 - Se puede usar solo con teclado; el foco pasa al contenido al cambiar de página y los resultados de búsqueda se anuncian a los lectores de pantalla.
-- Se revisó con axe-core en todas las pantallas y en ambos temas, y sin desbordes de 320 a 1440 px.
+- Se revisó con axe-core en ambos temas y sin desbordes de 320 a 1440 px. Las pantallas nuevas del taller y «Mis reparaciones» del cliente también pasan axe sin fallas en los dos temas.
 
 ## Red
 

@@ -65,7 +65,7 @@ const COLUMNAS_DISPONIBLES: Columna<Fila>[] = [
 
 const COLUMNAS_COSTOS: Columna<Fila>[] = [
   { clave: 'sucursal', titulo: 'Sede', ordenable: true },
-  { clave: 'finalizadas', titulo: 'Reparaciones finalizadas', tipo: 'numero', ordenable: true },
+  { clave: 'reparaciones', titulo: 'Reparaciones', tipo: 'numero', ordenable: true },
   { clave: 'manoObra', titulo: 'Mano de obra', tipo: 'pesos', ordenable: true },
   { clave: 'repuestos', titulo: 'Repuestos', tipo: 'pesos', ordenable: true },
   { clave: 'total', titulo: 'Total', tipo: 'pesos', ordenable: true },
@@ -202,7 +202,7 @@ export default class Reportes {
   protected readonly categoriasCostos = computed<CategoriaGrafico[]>(() =>
     porTotal(valorDe(this.costos) ?? []).map((fila) => ({
       etiqueta: fila.sucursal,
-      detalle: `${fila.finalizadas} ${fila.finalizadas === 1 ? 'finalizada' : 'finalizadas'}`,
+      detalle: `${fila.reparaciones} ${fila.reparaciones === 1 ? 'reparación' : 'reparaciones'}`,
       valores: [fila.manoObra, fila.repuestos],
     })),
   );

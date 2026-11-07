@@ -1,7 +1,4 @@
-<header class="cuenta__cabecera">
-  <h1>Mis reparaciones</h1>
-  <a class="btn btn--primario" routerLink="/cliente/reparaciones/agendar">Agendar reparación</a>
-</header>
+<h1>Mis reparaciones</h1>
 
 @if (reparaciones.isLoading()) {
   <app-esqueleto etiqueta="Cargando tus reparaciones" forma="filas" [cantidad]="3" />
@@ -13,95 +10,65 @@
   />
 } @else if (lista().length === 0) {
   <app-estado-vacio
-    titulo="Aún no has agendado reparaciones."
-    mensaje="El taller atiende las motos que compraste aquí y también motos de otros concesionarios."
+    titulo="Tus motos aún no tienen reparaciones."
+    mensaje="Cuando el taller repare una moto que compraste aquí, verás el trabajo hecho y lo que costó."
     icono="taller"
   />
 } @else {
+  <p class="muted">
+    {{ lista().length }} {{ lista().length === 1 ? 'reparación' : 'reparaciones' }} ·
+    <span class="dato">{{ totalGastado() | pesos }}</span> en total
+  </p>
   <ul class="tarjetas-cuenta">
     @for (reparacion of lista(); track reparacion.idReparacion) {
       <li class="tarjeta-cuenta">
         <div class="tarjeta-cuenta__cabecera">
           <app-placa [placa]="reparacion.placa" />
-          <p
-            class="tarjeta-cuenta__titulo"
-            tabindex="-1"
-            [id]="'reparacion-' + reparacion.idReparacion"
-          >
-            {{ reparacion.marca }} {{ reparacion.modelo }}
-          </p>
-          <app-chip-estado [estado]="reparacion.estado" />
+          <p class="tarjeta-cuenta__titulo">{{ reparacion.marca }} {{ reparacion.modelo }}</p>
         </div>
         <dl class="resumen">
           <div>
-            <dt>Cita</dt>
-            <dd class="dato">{{ reparacion.fechaAgendada | fecha: true }}</dd>
+            <dt>Fecha</dt>
+            <dd class="dato">{{ reparacion.fecha | fecha }}</dd>
           </div>
-          <div>
-            <dt>Sede</dt>
-            <dd>{{ reparacion.sucursal }}</dd>
-          </div>
-          <div>
-            <dt>Técnico</dt>
-            <dd>{{ reparacion.tecnico ?? 'Se asigna en la sede' }}</dd>
-          </div>
-          @if (reparacion.kilometrajeIngreso !== null) {
+          @if (reparacion.sucursal) {
             <div>
-              <dt>Kilometraje</dt>
-              <dd class="dato">
-                {{ reparacion.kilometrajeIngreso | numero }}<span class="dato__unidad">km</span>
-              </dd>
+              <dt>Sede</dt>
+              <dd>{{ reparacion.sucursal }}</dd>
             </div>
           }
-          @if (reparacion.fechaFinalizacion) {
-            <div>
-              <dt>Finalizada</dt>
-              <dd class="dato">{{ reparacion.fechaFinalizacion | fecha: true }}</dd>
-            </div>
-          }
+          <div>
+            <dt>{{ reparacion.tecnicos.length === 1 ? 'Técnico' : 'Técnicos' }}</dt>
+            <dd>{{ nombresTecnicos(reparacion) }}</dd>
+          </div>
         </dl>
         <p class="tarjeta-cuenta__texto">{{ reparacion.descripcion }}</p>
 
-        @if (reparacion.repuestos.length > 0 || reparacion.costoManoObra !== null) {
-          <details class="costos">
-            <summary>
-              {{ reparacion.estado === 'FINALIZADA' ? 'Costo total' : 'Costo hasta ahora' }}:
-              <span class="dato">{{ reparacion.costoTotal | pesos }}</span>
-            </summary>
-            <dl class="costos__detalle">
-              <div>
-                <dt>Mano de obra</dt>
-                <dd class="dato">
-                  {{
-                    reparacion.costoManoObra === null
-                      ? 'Pendiente'
-                      : (reparacion.costoManoObra | pesos)
-                  }}
-                </dd>
-              </div>
-              <div>
-                <dt>Repuestos</dt>
-                <dd class="dato">{{ reparacion.costoRepuestos ?? 0 | pesos }}</dd>
-              </div>
-            </dl>
-            @if (reparacion.repuestos.length > 0) {
-              <ul class="costos__repuestos">
-                @for (repuesto of reparacion.repuestos; track repuesto.idRepuesto) {
-                  <li>
-                    <span>{{ repuesto.nombre }} × {{ repuesto.cantidad }}</span>
-                    <span class="dato">{{ repuesto.subtotal | pesos }}</span>
-                  </li>
-                }
-              </ul>
-            }
-          </details>
-        }
-
-        @if (reparacion.estado === 'AGENDADA') {
-          <button type="button" class="btn btn--peligro" (click)="cancelar(reparacion)">
-            Cancelar cita
-          </button>
-        }
+        <details class="costos">
+          <summary>
+            Costo total: <span class="dato">{{ reparacion.costoTotal | pesos }}</span>
+          </summary>
+          <dl class="costos__detalle">
+            <div>
+              <dt>Mano de obra</dt>
+              <dd class="dato">{{ reparacion.costoManoObra | pesos }}</dd>
+            </div>
+            <div>
+              <dt>Repuestos</dt>
+              <dd class="dato">{{ reparacion.costoRepuestos | pesos }}</dd>
+            </div>
+          </dl>
+          @if (reparacion.repuestos.length > 0) {
+            <ul class="costos__repuestos">
+              @for (repuesto of reparacion.repuestos; track repuesto.idRepuesto) {
+                <li>
+                  <span>{{ repuesto.nombre }} × {{ repuesto.cantidad }}</span>
+                  <span class="dato">{{ repuesto.subtotal | pesos }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </details>
       </li>
     }
   </ul>

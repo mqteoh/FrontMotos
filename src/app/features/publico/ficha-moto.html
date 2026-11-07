@@ -14,7 +14,13 @@
   />
 } @else if (detalle(); as moto) {
   <article class="ficha">
-    <app-foto-moto class="ficha__foto" [tipo]="moto.tipoMoto" />
+    <app-foto-moto
+      class="ficha__foto"
+      [tipo]="moto.tipoMoto"
+      [marca]="moto.marca"
+      [modelo]="moto.modelo"
+      [principal]="true"
+    />
 
     <div class="ficha__info">
       <app-placa [placa]="moto.placa" [grande]="true" />

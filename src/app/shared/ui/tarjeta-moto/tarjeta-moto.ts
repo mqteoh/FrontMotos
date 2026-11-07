@@ -13,7 +13,7 @@ import { Placa } from '../placa/placa';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'tarjeta' },
   template: `
-    <app-foto-moto [tipo]="moto().tipoMoto" />
+    <app-foto-moto [tipo]="moto().tipoMoto" [marca]="moto().marca" [modelo]="moto().modelo" />
     <div class="tarjeta__cuerpo">
       <app-placa [placa]="moto().placa" />
       <p class="tarjeta__titulo" role="heading" [attr.aria-level]="nivelTitulo()">

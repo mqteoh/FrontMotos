@@ -6,11 +6,11 @@ import { Router, provideRouter, withComponentInputBinding } from '@angular/route
 import { RouterTestingHarness } from '@angular/router/testing';
 import { diasHasta, textoVencimiento } from '../../core/api/cliente-api';
 import { aplicarErroresDeCampos } from '../../core/api/errores';
-import { MotoDetalle, Reserva } from '../../core/api/modelos';
+import { MotoDetalle, Reparacion, Reserva } from '../../core/api/modelos';
 import { ConfirmacionService } from '../../shared/ui/confirmacion/confirmacion.service';
 import { ToastService } from '../../shared/ui/toast/toast.service';
-import AgendarReparacion from './agendar-reparacion';
 import ConfirmarReserva from './confirmar-reserva';
+import MisReparaciones from './mis-reparaciones';
 import MisReservas from './mis-reservas';
 import Perfil from './perfil';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -50,8 +50,7 @@ const DETALLE: MotoDetalle = {
     nombre: 'Sede Chapinero',
     ciudad: 'Bogotá',
     barrio: 'Chapinero',
-    calle: 'Calle 63',
-    numeroDireccion: '13-45',
+    calle: 'Calle 63 # 13-45',
   },
 };
 
@@ -70,9 +69,8 @@ describe('Área del cliente', () => {
           [
             { path: 'reservas', component: MisReservas },
             { path: 'reservar/:placa', component: ConfirmarReserva },
-            { path: 'agendar', component: AgendarReparacion },
             { path: 'perfil', component: Perfil },
-            { path: 'reparaciones', children: [] },
+            { path: 'reparaciones', component: MisReparaciones },
           ],
           withComponentInputBinding(),
         ),
@@ -184,101 +182,52 @@ describe('Área del cliente', () => {
     });
   });
 
-  describe('agendar reparación', () => {
-    async function abrirAsistente() {
-      const abierto = await abrir('/agendar');
-      backend.expectOne('/api/cliente/motos').flush([
+  describe('mis reparaciones', () => {
+    const REPARACION: Reparacion = {
+      idReparacion: 3,
+      placa: 'HBN46C',
+      marca: 'Honda',
+      modelo: 'CB 190R',
+      fecha: '2026-04-10',
+      descripcion: 'Cambio de pastillas y revisión de frenos',
+      idSucursal: 1,
+      sucursal: 'Sede Chapinero',
+      idCliente: 1,
+      cliente: 'María José Ramírez Castro',
+      tecnicos: [
+        { idEmpleado: 5, nombre: 'Felipe Ortiz Lozano', idSucursal: 1, sucursal: 'Sede Chapinero' },
+        { idEmpleado: 4, nombre: 'Jhon Castaño Ruiz', idSucursal: 1, sucursal: 'Sede Chapinero' },
+      ],
+      costoManoObra: 150000,
+      costoRepuestos: 338000,
+      costoTotal: 488000,
+      repuestos: [
         {
-          placa: 'HBN46C',
-          marca: 'Honda',
-          modelo: 'CB 190R',
-          anio: 2026,
-          color: 'Rojo',
-          origen: 'INVENTARIO',
+          idRepuesto: 3,
+          nombre: 'Pastillas de freno delanteras',
+          categoria: 'FRENOS',
+          cantidad: 1,
+          precioUnitario: 65000,
+          subtotal: 65000,
         },
-      ]);
-      backend.expectOne('/api/publico/sucursales').flush([DETALLE.sucursal]);
-      backend
-        .expectOne('/api/publico/marcas')
-        .flush([{ idMarca: 2, nombre: 'Honda', paisOrigen: 'Japón' }]);
-      await abierto.estable();
-      const componente = abierto.harness.routeDebugElement?.componentInstance as AgendarReparacion;
-      return { ...abierto, formulario: componente['formulario'] };
-    }
+      ],
+    };
 
-    const boton = (raiz: HTMLElement, etiqueta: string) =>
-      [...raiz.querySelectorAll<HTMLButtonElement>('button')].find(
-        (b) => b.textContent?.trim() === etiqueta,
-      );
-
-    it('no avanza sin elegir moto', async () => {
-      const { raiz, estable } = await abrirAsistente();
-      boton(raiz, 'Siguiente')?.click();
+    it('muestra el trabajo, los técnicos y el costo sin opción de agendar', async () => {
+      const { raiz, estable } = await abrir('/reparaciones');
+      backend.expectOne('/api/cliente/reparaciones').flush([REPARACION]);
       await estable();
-      expect(texto(raiz, '.pasos [aria-current="step"]')).toBe('1Moto');
-      expect(texto(raiz, '.campo__error')).toBe('Elige una de tus motos.');
+      expect(texto(raiz, '.tarjeta-cuenta')).toContain('Felipe Ortiz Lozano, Jhon Castaño Ruiz');
+      expect(texto(raiz, '.costos summary')).toContain('488.000');
+      expect(raiz.querySelector('a[href*="agendar"]')).toBeNull();
+      expect(raiz.querySelectorAll('button').length).toBe(0);
     });
 
-    it('agenda una moto propia sin enviar datos de moto externa', async () => {
-      const { raiz, estable, formulario } = await abrirAsistente();
-      formulario.patchValue({
-        placaPropia: 'HBN46C',
-        idSucursal: 1,
-        fechaAgendada: '2030-01-15T09:30',
-        descripcion: 'Cambio de aceite',
-      });
-      boton(raiz, 'Siguiente')?.click();
+    it('sin reparaciones explica cuándo aparecerán', async () => {
+      const { raiz, estable } = await abrir('/reparaciones');
+      backend.expectOne('/api/cliente/reparaciones').flush([]);
       await estable();
-      boton(raiz, 'Siguiente')?.click();
-      await estable();
-      raiz.querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
-      const peticion = backend.expectOne('/api/cliente/reparaciones');
-      expect(peticion.request.body).toEqual({
-        placa: 'HBN46C',
-        idSucursal: 1,
-        fechaAgendada: '2030-01-15T09:30',
-        descripcion: 'Cambio de aceite',
-        kilometrajeIngreso: null,
-        motoExterna: null,
-      });
-    });
-
-    it('con moto externa envía sus datos y un 409 queda visible en la revisión', async () => {
-      const { raiz, estable, formulario } = await abrirAsistente();
-      formulario.patchValue({ tipoMoto: 'externa' });
-      formulario.patchValue({
-        placa: 'qwe12r',
-        motoExterna: { idMarca: 2, nroModelo: 1, anio: 2021, color: ' Negro ' },
-        idSucursal: 1,
-        fechaAgendada: '2030-01-15T09:30',
-        descripcion: 'Frenos',
-      });
-      await vi.waitFor(() =>
-        backend
-          .expectOne('/api/publico/marcas/2/modelos')
-          .flush([{ idMarca: 2, nroModelo: 1, nombreMarca: 'Honda', nombre: 'CB 190R' }]),
-      );
-      formulario.controls.motoExterna.controls.nroModelo.setValue(1);
-      await estable();
-      for (let i = 0; i < 2; i++) {
-        boton(raiz, 'Siguiente')?.click();
-        await estable();
-      }
-      raiz.querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
-      const peticion = backend.expectOne('/api/cliente/reparaciones');
-      expect(peticion.request.body.placa).toBe('QWE12R');
-      expect(peticion.request.body.motoExterna).toEqual({
-        idMarca: 2,
-        nroModelo: 1,
-        anio: 2021,
-        color: 'Negro',
-      });
-      const { body, opciones } = conflicto(
-        'La moto QWE12R ya tiene un servicio pendiente en el taller.',
-      );
-      peticion.flush(body, opciones);
-      await estable();
-      expect(texto(raiz, '#error-agendar')).toContain('ya tiene un servicio pendiente');
+      expect(texto(raiz, 'app-estado-vacio')).toContain('compraste aquí');
     });
   });
 
@@ -327,7 +276,8 @@ describe('Área del cliente', () => {
   });
 
   it('las rutas del área se resuelven', async () => {
-    await RouterTestingHarness.create('/reparaciones');
-    expect(TestBed.inject(Router).url).toBe('/reparaciones');
+    await RouterTestingHarness.create('/perfil');
+    expect(TestBed.inject(Router).url).toBe('/perfil');
+    backend.match(() => true);
   });
 });

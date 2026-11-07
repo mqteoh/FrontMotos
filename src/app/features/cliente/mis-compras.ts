@@ -51,7 +51,7 @@ import { Placa } from '../../shared/ui/placa/placa';
         <section class="cuenta__seccion" aria-labelledby="titulo-compras-motos">
           <h2 id="titulo-compras-motos">Motos</h2>
           <ul class="tarjetas-cuenta">
-            @for (venta of datos.motos; track venta.idVentaMoto) {
+            @for (venta of datos.motos; track venta.placa) {
               <li class="tarjeta-cuenta">
                 <div class="tarjeta-cuenta__cabecera">
                   <app-placa [placa]="venta.placa" />
@@ -76,9 +76,6 @@ import { Placa } from '../../shared/ui/placa/placa';
                     <dd>{{ metodos[venta.metodoPago] }} · {{ facturas[venta.tipoFactura] }}</dd>
                   </div>
                 </dl>
-                @if (venta.idReserva !== null) {
-                  <p class="muted pequeno">Comprada con la reserva N.º {{ venta.idReserva }}.</p>
-                }
               </li>
             }
           </ul>

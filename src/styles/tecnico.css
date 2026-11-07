@@ -35,22 +35,12 @@
   flex-wrap: wrap;
   gap: var(--space-1) var(--space-2);
   align-items: center;
+  justify-content: space-between;
+  justify-self: stretch;
 }
 
-.tarjeta-reparacion__hora {
-  font-size: 1.25rem;
-}
-
-.tarjeta-reparacion__atraso {
-  display: inline-flex;
-  gap: var(--space-05);
-  align-items: center;
-  color: var(--color-warning);
+.tarjeta-reparacion__total {
   font-weight: 600;
-}
-
-.tarjeta-reparacion--atrasada {
-  border-color: var(--color-warning);
 }
 
 .vistas {
@@ -74,15 +64,6 @@
   font-size: var(--texto-pequeno);
 }
 
-.agenda__dia {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.agenda__dia h3 {
-  margin: var(--space-2) 0 0;
-}
-
 .reparacion__cabecera,
 .historial__cabecera {
   display: flex;
@@ -94,6 +75,10 @@
 .reparacion__cabecera h1,
 .historial__cabecera h2 {
   margin: 0;
+}
+
+.reparacion__corregir {
+  margin-inline-start: auto;
 }
 
 .reparacion__cabecera h1:focus {
@@ -138,4 +123,30 @@
 
 .repuestos-encontrados__cantidad {
   width: 5rem;
+}
+
+.casillas {
+  display: grid;
+  gap: var(--space-05);
+}
+
+.casillas__titulo {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--texto-pequeno);
+  font-weight: 600;
+}
+
+.casilla {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+.casilla input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  accent-color: var(--color-accent);
 }

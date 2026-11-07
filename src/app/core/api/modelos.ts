@@ -3,7 +3,7 @@ export type TipoMoto =
 
 export type EstadoReserva = 'ACTIVA' | 'CONCRETADA' | 'CANCELADA' | 'VENCIDA';
 
-export type EstadoReparacion = 'AGENDADA' | 'EN_PROCESO' | 'FINALIZADA' | 'CANCELADA';
+export type EstadoMoto = 'DISPONIBLE' | 'RESERVADA' | 'VENDIDA';
 
 export type Rol = 'CLIENTE' | 'DUENO' | 'VENDEDOR' | 'TECNICO';
 
@@ -65,7 +65,6 @@ export interface Sucursal {
   ciudad: string;
   barrio: string;
   calle: string;
-  numeroDireccion: string;
 }
 
 export interface FiltrosCatalogo {
@@ -148,26 +147,44 @@ export interface RepuestoUsado {
   subtotal: number;
 }
 
+export interface TecnicoParticipante {
+  idEmpleado: number;
+  nombre: string;
+  idSucursal: number;
+  sucursal: string;
+}
+
 export interface Reparacion {
   idReparacion: number;
   placa: string;
   marca: string;
   modelo: string;
-  fechaAgendada: string;
-  fechaFinalizacion: string | null;
-  estado: EstadoReparacion;
+  fecha: string;
   descripcion: string;
-  kilometrajeIngreso: number | null;
-  idSucursal: number;
-  sucursal: string;
-  idCliente: number;
-  cliente: string;
-  idTecnico: number | null;
-  tecnico: string | null;
-  costoManoObra: number | null;
-  costoRepuestos: number | null;
-  costoTotal: number | null;
+  idSucursal: number | null;
+  sucursal: string | null;
+  idCliente: number | null;
+  cliente: string | null;
+  tecnicos: TecnicoParticipante[];
+  costoManoObra: number;
+  costoRepuestos: number;
+  costoTotal: number;
   repuestos: RepuestoUsado[];
+}
+
+export interface UsoRepuesto {
+  idRepuesto: number;
+  cantidad: number;
+  precioUnitario: number | null;
+}
+
+export interface NuevaReparacion {
+  placa: string;
+  fecha: string;
+  descripcion: string;
+  costo: number;
+  idTecnicos: number[];
+  repuestos: UsoRepuesto[];
 }
 
 export interface MotoCliente {
@@ -176,20 +193,9 @@ export interface MotoCliente {
   modelo: string;
   anio: number;
   color: string;
-  origen: 'INVENTARIO' | 'EXTERNA';
-}
-
-export interface AgendarReparacion {
-  placa: string;
-  idSucursal: number;
-  fechaAgendada: string;
-  descripcion: string;
-  kilometrajeIngreso: number | null;
-  motoExterna: { idMarca: number; nroModelo: number; anio: number; color: string } | null;
 }
 
 export interface VentaMoto {
-  idVentaMoto: number;
   fechaVenta: string;
   metodoPago: MetodoPago;
   tipoFactura: TipoFactura;
@@ -202,7 +208,6 @@ export interface VentaMoto {
   idVendedor: number;
   vendedor: string;
   sucursal: string;
-  idReserva: number | null;
 }
 
 export interface ItemVentaAccesorio {
@@ -302,25 +307,22 @@ export interface MotoCatalogo {
   ciudad: string;
 }
 
-export type OrigenMoto = 'INVENTARIO' | 'EXTERNA';
-
 export type TipoEmpleado = 'DUENO' | 'VENDEDOR' | 'TECNICO';
 
 export interface MotoAdmin {
   placa: string;
   idMarca: number;
   nroModelo: number;
-  idSucursal: number | null;
-  origen: OrigenMoto;
+  idSucursal: number;
   anio: number;
   color: string;
   kilometraje: number;
-  precio: number | null;
+  precio: number;
   fechaIngreso: string;
   marca: string;
   modelo: string;
-  sucursal: string | null;
-  vendida: boolean;
+  sucursal: string;
+  estado: EstadoMoto;
 }
 
 export interface EmpleadoAdmin {
@@ -330,7 +332,8 @@ export interface EmpleadoAdmin {
   apellidos: string;
   fechaContratacion: string;
   tipoEmpleado: TipoEmpleado;
-  idSucursal: number | null;
+  salario: number;
+  idSucursal: number;
   idJefe: number | null;
   correoAcceso: string;
   telefonos: string[];
@@ -338,7 +341,7 @@ export interface EmpleadoAdmin {
   comision: number | null;
   certificadoTecnico: string | null;
   especialidad: string | null;
-  sucursal: string | null;
+  sucursal: string;
   jefe: string | null;
 }
 
@@ -365,7 +368,7 @@ export interface ResumenGestion {
   mes: string;
   motosDisponibles: number;
   reservasActivas: number;
-  reparacionesPendientes: number;
+  reparacionesMes: number;
   motosVendidasMes: number;
   ventasMotosMes: number;
   ventasAccesoriosMes: number;
@@ -395,7 +398,7 @@ export interface VentasMes {
 export interface CostosSede {
   idSucursal: number;
   sucursal: string;
-  finalizadas: number;
+  reparaciones: number;
   manoObra: number;
   repuestos: number;
   total: number;

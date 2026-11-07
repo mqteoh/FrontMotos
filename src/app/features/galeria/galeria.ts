@@ -172,9 +172,9 @@ export default class Galeria {
     'CONCRETADA',
     'CANCELADA',
     'VENCIDA',
-    'AGENDADA',
-    'EN_PROCESO',
-    'FINALIZADA',
+    'DISPONIBLE',
+    'RESERVADA',
+    'VENDIDA',
   ];
   protected readonly reservas = signal(RESERVAS);
   protected readonly columnas: Columna<ReservaEjemplo>[] = [

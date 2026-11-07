@@ -23,11 +23,6 @@ export default [
         loadComponent: () => import('./mis-reparaciones'),
       },
       {
-        path: 'reparaciones/agendar',
-        title: 'Agendar reparación',
-        loadComponent: () => import('./agendar-reparacion'),
-      },
-      {
         path: 'compras',
         title: 'Mis compras',
         loadComponent: () => import('./mis-compras'),

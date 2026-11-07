@@ -36,8 +36,8 @@ export const MENU_PANEL: Record<Rol, readonly ItemMenu[]> = {
     { etiqueta: 'Ventas', ruta: '/vendedor/ventas', icono: 'venta' },
   ],
   TECNICO: [
-    { etiqueta: 'Agenda', ruta: '/tecnico', icono: 'agendada', exacta: true },
-    { etiqueta: 'Mis trabajos', ruta: '/tecnico/mis-trabajos', icono: 'taller' },
+    { etiqueta: 'Reparaciones', ruta: '/tecnico', icono: 'taller', exacta: true },
+    { etiqueta: 'Registrar', ruta: '/tecnico/nueva', icono: 'agregar' },
     { etiqueta: 'Historial', ruta: '/tecnico/historial', icono: 'buscar' },
   ],
 };

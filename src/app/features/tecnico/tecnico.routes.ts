@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { conRol } from '../../core/auth/guards';
 import { LayoutTecnico } from './layout-tecnico';
 
 export default [
@@ -9,14 +8,13 @@ export default [
     children: [
       {
         path: '',
-        title: 'Agenda del taller',
-        loadComponent: () => import('./agenda'),
+        title: 'Reparaciones del taller',
+        loadComponent: () => import('./reparaciones'),
       },
       {
-        path: 'mis-trabajos',
-        title: 'Mis trabajos',
-        canActivate: [conRol('TECNICO')],
-        loadComponent: () => import('./mis-trabajos'),
+        path: 'nueva',
+        title: 'Registrar reparación',
+        loadComponent: () => import('./formulario-reparacion'),
       },
       {
         path: 'historial',
@@ -27,6 +25,11 @@ export default [
         path: 'reparaciones/:idReparacion',
         title: 'Reparación',
         loadComponent: () => import('./reparacion'),
+      },
+      {
+        path: 'reparaciones/:idReparacion/editar',
+        title: 'Corregir reparación',
+        loadComponent: () => import('./formulario-reparacion'),
       },
     ],
   },

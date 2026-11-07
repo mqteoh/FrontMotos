@@ -33,7 +33,8 @@ export class LayoutTecnico {
   private readonly auth = inject(AuthService);
   protected readonly esDueno = computed(() => this.auth.usuario()?.rol === 'DUENO');
   protected readonly secciones = [
-    { etiqueta: 'Agenda', ruta: '/tecnico', exacta: true },
+    { etiqueta: 'Reparaciones', ruta: '/tecnico', exacta: true },
+    { etiqueta: 'Registrar', ruta: '/tecnico/nueva', exacta: false },
     { etiqueta: 'Historial', ruta: '/tecnico/historial', exacta: false },
   ];
 }

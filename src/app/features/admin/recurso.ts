@@ -59,8 +59,9 @@ export interface CampoRecurso {
 export interface FiltroRecurso {
   clave: string;
   etiqueta: string;
-  todos: string;
-  opciones: FuenteOpciones;
+  tipo?: 'seleccion' | 'fecha';
+  todos?: string;
+  opciones?: FuenteOpciones;
   local?: boolean;
 }
 

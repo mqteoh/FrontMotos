@@ -26,7 +26,9 @@ describe('TarjetaMoto', () => {
     expect(raiz.querySelector('a')?.getAttribute('href')).toBe('/motos/GTK22F');
     expect(raiz.querySelector('[role="heading"]')?.getAttribute('aria-level')).toBe('2');
     expect(raiz.querySelector('.tarjeta__datos')?.textContent).toContain('Scooter');
-    expect(raiz.querySelector('app-foto-moto')?.textContent).toContain('Foto no disponible');
+    expect(raiz.querySelector('app-foto-moto img')?.getAttribute('src')).toBe(
+      '/motos/yamaha-nmax-155.webp',
+    );
     expect(raiz.querySelector('.tarjeta__precio')?.textContent?.replace(/\s/g, '')).toBe(
       '$15.900.000',
     );

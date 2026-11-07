@@ -35,7 +35,7 @@ describe('Rutas y navegación por rol', () => {
     expect(raiz.querySelector('a.marca')?.getAttribute('href')).toBe('/');
     expect(raiz.querySelector('h1')?.textContent).toBe('Motos disponibles');
     expect(textos(raiz, '.cabecera__sesion a')).toEqual(['Iniciar sesión']);
-    expect(titulo).toBe('Motos disponibles | Concesionario de motos');
+    expect(titulo).toBe('Motos disponibles | MotoMaster');
   });
 
   it('sin sesión, un panel lleva al inicio de sesión recordando la ruta', async () => {
@@ -46,7 +46,7 @@ describe('Rutas y navegación por rol', () => {
 
   it.each([
     ['VENDEDOR', '/vendedor', ['Reservas', 'Clientes', 'Ventas']],
-    ['TECNICO', '/tecnico', ['Agenda', 'Mis trabajos', 'Historial']],
+    ['TECNICO', '/tecnico', ['Reparaciones', 'Registrar', 'Historial']],
     ['DUENO', '/admin', ['Administración', 'Reportes', 'Ventas', 'Taller']],
   ] as const)('%s entra a %s y ve solo su menú', async (rol, ruta, menu) => {
     guardarSesionDePrueba(rol);
@@ -100,7 +100,7 @@ describe('Rutas y navegación por rol', () => {
   it('una ruta inexistente muestra la página de no encontrada', async () => {
     const { raiz, titulo } = await abrir('/no-existe');
     expect(raiz.querySelector('h1')?.textContent).toBe('Esta página no existe');
-    expect(titulo).toBe('Página no encontrada | Concesionario de motos');
+    expect(titulo).toBe('Página no encontrada | MotoMaster');
   });
 
   it('el botón de saltar lleva el foco al contenido', async () => {

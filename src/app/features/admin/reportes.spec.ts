@@ -81,7 +81,7 @@ describe('Reportes de gestión', () => {
         mes: '2026-11',
         motosDisponibles: 12,
         reservasActivas: 2,
-        reparacionesPendientes: 3,
+        reparacionesMes: 3,
         motosVendidasMes: 1,
         ventasMotosMes: 17000000,
         ventasAccesoriosMes: 1527000,
@@ -130,7 +130,7 @@ describe('Reportes de gestión', () => {
       );
       expect(raiz.querySelectorAll('app-grafico-barras')).toHaveLength(4);
       expect(raiz.querySelectorAll('.reporte__datos')).toHaveLength(4);
-      expect(raiz.textContent).toContain('Aún no hay reparaciones finalizadas.');
+      expect(raiz.textContent).toContain('Aún no hay reparaciones registradas.');
       const mensual = raiz.querySelector('app-seccion-reporte');
       expect(mensual?.querySelector('.grafico__leyenda')?.textContent).toContain('Accesorios');
       expect(mensual?.querySelector('[role="img"]')?.getAttribute('aria-label')).toContain(

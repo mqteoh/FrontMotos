@@ -160,7 +160,7 @@ describe('Panel del vendedor', () => {
       valorTotal: 17500000,
       idReserva: 8,
     });
-    peticion.flush({ idVentaMoto: 14, marca: 'KTM', modelo: 'Duke 200', cliente: 'Juan' });
+    peticion.flush({ placa: 'MNP12E', marca: 'KTM', modelo: 'Duke 200', cliente: 'Juan' });
     await vi.waitFor(() => expect(TestBed.inject(Router).url).toBe('/vendedor'));
   });
 

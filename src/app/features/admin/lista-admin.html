@@ -50,21 +50,31 @@
   @for (filtro of filtros; track filtro.clave) {
     <div class="campo">
       <label class="campo__etiqueta" [for]="'filtro-' + filtro.clave">{{ filtro.etiqueta }}</label>
-      <select
-        class="control"
-        [id]="'filtro-' + filtro.clave"
-        (change)="filtrar(filtro.clave, $event)"
-      >
-        <option value="" [selected]="!valoresFiltro()[filtro.clave]">{{ filtro.todos }}</option>
-        @for (opcion of opcionesFiltro(filtro); track opcion.valor) {
-          <option
-            [value]="opcion.valor"
-            [selected]="opcion.valor === valoresFiltro()[filtro.clave]"
-          >
-            {{ opcion.etiqueta }}
-          </option>
-        }
-      </select>
+      @if (filtro.tipo === 'fecha') {
+        <input
+          class="control dato"
+          type="date"
+          [id]="'filtro-' + filtro.clave"
+          [value]="valoresFiltro()[filtro.clave]"
+          (change)="filtrar(filtro.clave, $event)"
+        />
+      } @else {
+        <select
+          class="control"
+          [id]="'filtro-' + filtro.clave"
+          (change)="filtrar(filtro.clave, $event)"
+        >
+          <option value="" [selected]="!valoresFiltro()[filtro.clave]">{{ filtro.todos }}</option>
+          @for (opcion of opcionesFiltro(filtro); track opcion.valor) {
+            <option
+              [value]="opcion.valor"
+              [selected]="opcion.valor === valoresFiltro()[filtro.clave]"
+            >
+              {{ opcion.etiqueta }}
+            </option>
+          }
+        </select>
+      }
     </div>
   }
 </div>

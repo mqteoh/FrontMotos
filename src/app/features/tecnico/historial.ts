@@ -7,7 +7,7 @@ import { mensajeDeError } from '../../core/api/errores';
 import { Reparacion } from '../../core/api/modelos';
 import { valorDe } from '../../core/api/recurso';
 import { PLACA } from '../../core/api/publico-api';
-import { API_TECNICO } from '../../core/api/tecnico-api';
+import { API_TECNICO, totalReparaciones } from '../../core/api/tecnico-api';
 import { PesosPipe } from '../../shared/formato/pesos.pipe';
 import { Esqueleto } from '../../shared/ui/esqueleto/esqueleto';
 import { EstadoError } from '../../shared/ui/estado-error/estado-error';
@@ -68,7 +68,7 @@ import { TarjetaReparacion } from './tarjeta-reparacion';
       } @else if (lista().length === 0) {
         <app-estado-vacio
           titulo="Esa moto no tiene reparaciones registradas."
-          mensaje="Revisa la placa. Si es la primera vez que viene al taller, aún no tendrá historial."
+          mensaje="Revisa la placa. Solo tienen historial las motos vendidas aquí que ya pasaron por el taller."
           icono="taller"
         />
       } @else {
@@ -79,8 +79,7 @@ import { TarjetaReparacion } from './tarjeta-reparacion';
           </div>
           <p class="muted">
             {{ lista().length }} {{ lista().length === 1 ? 'visita' : 'visitas' }} al taller ·
-            gastado en reparaciones finalizadas
-            <span class="dato">{{ totalFinalizadas() | pesos }}</span>
+            <span class="dato">{{ totalGastado() | pesos }}</span> en reparaciones
           </p>
           <ol class="tarjetas-cuenta">
             @for (reparacion of lista(); track reparacion.idReparacion) {
@@ -105,9 +104,7 @@ export default class Historial {
     PLACA.test(this.placa()) ? `${API_TECNICO}/historial/${this.placa()}` : undefined,
   );
   protected readonly lista = computed(() =>
-    [...(valorDe(this.historial) ?? [])].sort((a, b) =>
-      b.fechaAgendada.localeCompare(a.fechaAgendada),
-    ),
+    [...(valorDe(this.historial) ?? [])].sort((a, b) => b.fecha.localeCompare(a.fecha)),
   );
   protected readonly mensajeError = computed(() => mensajeDeError(this.historial.error()));
   protected readonly anuncio = computed(() => {
@@ -122,11 +119,7 @@ export default class Historial {
       ? '1 visita al taller encontrada.'
       : `${cantidad} visitas al taller encontradas.`;
   });
-  protected readonly totalFinalizadas = computed(() =>
-    this.lista()
-      .filter((r) => r.estado === 'FINALIZADA')
-      .reduce((total, r) => total + Number(r.costoTotal ?? 0), 0),
-  );
+  protected readonly totalGastado = computed(() => totalReparaciones(this.lista()));
 
   protected buscar(evento: Event, valor: string): void {
     evento.preventDefault();

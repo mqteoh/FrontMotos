@@ -1,7 +1,7 @@
 import { Validators } from '@angular/forms';
 import {
   API_ADMIN,
-  ORIGENES_MOTO,
+  ESTADOS_MOTO,
   TIPOS_EMPLEADO,
   parametrosSuministro,
 } from '../../core/api/admin-api';
@@ -81,9 +81,14 @@ function precio(clave = 'precio', etiqueta = 'Precio'): CampoRecurso {
   };
 }
 
-const DIRECCION: CampoRecurso[] = [
+const DIRECCION_SEDE: CampoRecurso[] = [
   texto('ciudad', 'Ciudad', 60),
   texto('barrio', 'Barrio', 60),
+  texto('calle', 'Dirección', 60, { ayuda: 'Calle y número, por ejemplo Calle 63 # 13-45.' }),
+];
+
+const DIRECCION: CampoRecurso[] = [
+  ...DIRECCION_SEDE.slice(0, 2),
   texto('calle', 'Calle', 60, { ayuda: 'Por ejemplo, Calle 72 o Carrera 15.' }),
   texto('numeroDireccion', 'Número', 20, { ayuda: 'Por ejemplo, 10-35.' }),
 ];
@@ -203,40 +208,34 @@ const MODELOS = definir<Modelo>({
   bloqueo: 'Hay motos registradas con este modelo. Elimina o cambia primero esas motos.',
 });
 
-const esInventario = (valores: Record<string, unknown>) => valores['origen'] === 'INVENTARIO';
-
 const MOTOS = definir<MotoAdmin>({
   ruta: 'motos',
   titulo: 'Motos',
   singular: 'moto',
   genero: 'f',
-  descripcion: 'Motos del inventario de cada sede y motos de clientes que entraron al taller.',
+  descripcion: 'Motos de cada sede. El estado cambia solo con las reservas y las ventas.',
   vacio: 'Aún no hay motos registradas.',
   icono: 'moto',
   url: `${API_ADMIN}/motos`,
   urlDe: (id) => `${API_ADMIN}/motos/${id}`,
   id: (m) => m.placa,
   nombre: (m) => m.placa,
-  vista: (m) => ({
-    ...m,
-    moto: `${m.marca} ${m.modelo}`,
-    situacion: m.origen === 'EXTERNA' ? 'De un cliente' : m.vendida ? 'Vendida' : 'En inventario',
-  }),
+  vista: (m) => ({ ...m, moto: `${m.marca} ${m.modelo}` }),
   columnas: [
     { clave: 'placa', titulo: 'Placa', tipo: 'placa', ordenable: true },
     { clave: 'moto', titulo: 'Moto', ordenable: true },
     { clave: 'anio', titulo: 'Año', tipo: 'numero', ordenable: true },
-    { clave: 'situacion', titulo: 'Situación', ordenable: true },
+    { clave: 'estado', titulo: 'Estado', tipo: 'estado', ordenable: true },
     { clave: 'sucursal', titulo: 'Sede', ordenable: true },
     { clave: 'precio', titulo: 'Precio', tipo: 'pesos', ordenable: true },
   ],
   filtros: [
     { clave: 'idSucursal', etiqueta: 'Sede', todos: 'Todas las sedes', opciones: sedes },
     {
-      clave: 'origen',
-      etiqueta: 'Origen',
-      todos: 'Todos los orígenes',
-      opciones: opcionesFijas(ORIGENES_MOTO),
+      clave: 'estado',
+      etiqueta: 'Estado',
+      todos: 'Todos los estados',
+      opciones: opcionesFijas(ESTADOS_MOTO),
     },
   ],
   catalogos: ['sedes', 'modelos'],
@@ -264,23 +263,14 @@ const MOTOS = definir<MotoAdmin>({
         ),
     },
     {
-      clave: 'origen',
-      etiqueta: 'Origen',
-      tipo: 'seleccion',
-      obligatorio: true,
-      ayuda: 'Una moto del inventario lleva sede y precio; la de un cliente no lleva ninguno.',
-      opciones: opcionesFijas(ORIGENES_MOTO),
-    },
-    {
       clave: 'idSucursal',
       etiqueta: 'Sede',
       tipo: 'seleccion',
       obligatorio: true,
       numerico: true,
       opciones: sedes,
-      visible: esInventario,
     },
-    { ...precio(), visible: esInventario },
+    precio(),
     {
       clave: 'anio',
       etiqueta: 'Año',
@@ -325,13 +315,13 @@ const SEDES = definir<Sucursal>({
   urlDe: (id) => `${API_ADMIN}/sucursales/${id}`,
   id: (s) => String(s.idSucursal),
   nombre: (s) => s.nombre,
-  vista: (s) => ({ ...s, direccion: `${s.calle} # ${s.numeroDireccion}, ${s.barrio}` }),
+  vista: (s) => ({ ...s, direccion: `${s.calle}, ${s.barrio}` }),
   columnas: [
     { clave: 'nombre', titulo: 'Sede', ordenable: true },
     { clave: 'ciudad', titulo: 'Ciudad', ordenable: true },
     { clave: 'direccion', titulo: 'Dirección' },
   ],
-  campos: [texto('nombre', 'Nombre', 80), ...DIRECCION],
+  campos: [texto('nombre', 'Nombre', 80), ...DIRECCION_SEDE],
   alimenta: ['sedes'],
   bloqueo:
     'La sede tiene empleados, motos, reservas o entregas asociadas. Muévelos o elimínalos primero.',
@@ -446,7 +436,7 @@ const EMPLEADOS = definir<EmpleadoAdmin>({
   titulo: 'Empleados',
   singular: 'empleado',
   genero: 'm',
-  descripcion: 'Vendedores, técnicos y dueño, con su sede, su jefe y su correo de acceso.',
+  descripcion: 'Vendedores, técnicos y dueño, con su sede, salario, jefe y correo de acceso.',
   vacio: 'Aún no hay empleados registrados.',
   icono: 'usuario',
   url: `${API_ADMIN}/empleados`,
@@ -463,6 +453,7 @@ const EMPLEADOS = definir<EmpleadoAdmin>({
     { clave: 'nombre', titulo: 'Nombre', ordenable: true },
     { clave: 'cargo', titulo: 'Cargo', ordenable: true },
     { clave: 'sucursal', titulo: 'Sede', ordenable: true },
+    { clave: 'salario', titulo: 'Salario', tipo: 'pesos', ordenable: true },
     { clave: 'jefe', titulo: 'Jefe' },
     { clave: 'correoAcceso', titulo: 'Correo de acceso' },
   ],
@@ -505,8 +496,8 @@ const EMPLEADOS = definir<EmpleadoAdmin>({
       obligatorio: true,
       numerico: true,
       opciones: sedes,
-      visible: (valores) => Boolean(valores['tipoEmpleado']) && valores['tipoEmpleado'] !== 'DUENO',
     },
+    precio('salario', 'Salario mensual'),
     {
       clave: 'idJefe',
       etiqueta: 'Jefe directo',
@@ -772,13 +763,12 @@ const VENTAS_MOTO = definir<VentaMoto>({
   icono: 'venta',
   url: `${API_VENDEDOR}/ventas-moto`,
   urlDe: (id) => `${API_ADMIN}/ventas-moto/${id}`,
-  id: (v) => String(v.idVentaMoto),
-  nombre: (v) => `N.º ${v.idVentaMoto}`,
+  id: (v) => v.placa,
+  nombre: (v) => v.placa,
   vista: (v) => ({ ...v, moto: `${v.marca} ${v.modelo}` }),
   columnas: [
-    { clave: 'idVentaMoto', titulo: 'N.º', tipo: 'numero', ordenable: true },
+    { clave: 'placa', titulo: 'Placa', tipo: 'placa', ordenable: true },
     { clave: 'fechaVenta', titulo: 'Fecha', tipo: 'fecha-hora', ordenable: true },
-    { clave: 'placa', titulo: 'Placa', tipo: 'placa' },
     { clave: 'moto', titulo: 'Moto' },
     { clave: 'cliente', titulo: 'Cliente', ordenable: true },
     { clave: 'vendedor', titulo: 'Vendedor', ordenable: true },
@@ -817,44 +807,36 @@ const VENTAS_ACCESORIOS = definir<VentaAccesorio>({
   editable: false,
 });
 
-const ESTADOS_REPARACION = {
-  AGENDADA: 'Agendada',
-  EN_PROCESO: 'En proceso',
-  FINALIZADA: 'Finalizada',
-  CANCELADA: 'Cancelada',
-};
-
 const REPARACIONES = definir<Reparacion>({
   ruta: 'reparaciones',
   titulo: 'Reparaciones',
   singular: 'reparación',
   genero: 'f',
-  descripcion: 'Citas y trabajos del taller de todas las sedes, con su técnico y su costo.',
+  descripcion: 'Reparaciones registradas por los técnicos de todas las sedes, con su costo.',
   vacio: 'Aún no hay reparaciones.',
   icono: 'taller',
   url: `${API_ADMIN}/reparaciones`,
   urlDe: (id) => `${API_ADMIN}/reparaciones/${id}`,
   id: (r) => String(r.idReparacion),
   nombre: (r) => `N.º ${r.idReparacion}`,
-  vista: (r) => ({ ...r, moto: `${r.marca} ${r.modelo}`, tecnico: r.tecnico ?? 'Sin asignar' }),
+  vista: (r) => ({
+    ...r,
+    moto: `${r.marca} ${r.modelo}`,
+    tecnicosTexto: r.tecnicos.map((t) => t.nombre).join(', '),
+  }),
   columnas: [
     { clave: 'idReparacion', titulo: 'N.º', tipo: 'numero', ordenable: true },
-    { clave: 'fechaAgendada', titulo: 'Cita', tipo: 'fecha-hora', ordenable: true },
+    { clave: 'fecha', titulo: 'Fecha', tipo: 'fecha', ordenable: true },
     { clave: 'placa', titulo: 'Placa', tipo: 'placa' },
     { clave: 'moto', titulo: 'Moto' },
     { clave: 'sucursal', titulo: 'Sede', ordenable: true },
-    { clave: 'tecnico', titulo: 'Técnico', ordenable: true },
-    { clave: 'estado', titulo: 'Estado', tipo: 'estado', ordenable: true },
+    { clave: 'tecnicosTexto', titulo: 'Técnicos' },
     { clave: 'costoTotal', titulo: 'Costo', tipo: 'pesos', ordenable: true },
   ],
   filtros: [
     { clave: 'idSucursal', etiqueta: 'Sede', todos: 'Todas las sedes', opciones: sedes },
-    {
-      clave: 'estado',
-      etiqueta: 'Estado',
-      todos: 'Todos los estados',
-      opciones: opcionesFijas(ESTADOS_REPARACION),
-    },
+    { clave: 'desde', etiqueta: 'Desde', tipo: 'fecha' },
+    { clave: 'hasta', etiqueta: 'Hasta', tipo: 'fecha' },
   ],
   editable: false,
   catalogos: ['sedes'],

@@ -151,7 +151,7 @@ export default class ListaAdmin {
   }
 
   protected opcionesFiltro(filtro: FiltroRecurso) {
-    return filtro.opciones({ catalogos: this.catalogos, idEditado: null }) ?? [];
+    return filtro.opciones?.({ catalogos: this.catalogos, idEditado: null }) ?? [];
   }
 
   protected puedeEliminar(fila: Fila): boolean {
@@ -167,7 +167,9 @@ export default class ListaAdmin {
 
   protected filtrar(clave: string, evento: Event): void {
     this.aviso.set(null);
-    this.navegar({ [clave]: (evento.target as HTMLSelectElement).value || null });
+    this.navegar({
+      [clave]: (evento.target as HTMLSelectElement | HTMLInputElement).value || null,
+    });
   }
 
   protected quitarFiltros(): void {

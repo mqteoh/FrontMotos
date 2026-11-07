@@ -50,8 +50,8 @@
         <dd class="kpi__valor">{{ datos.reservasActivas | numero }}</dd>
       </div>
       <div class="kpi">
-        <dt>Reparaciones pendientes</dt>
-        <dd class="kpi__valor">{{ datos.reparacionesPendientes | numero }}</dd>
+        <dt>Reparaciones del mes</dt>
+        <dd class="kpi__valor">{{ datos.reparacionesMes | numero }}</dd>
       </div>
       <div class="kpi">
         <dt>Clientes</dt>
@@ -147,7 +147,7 @@
   <app-seccion-reporte
     titulo="¿Cuánto cuestan las reparaciones en cada sede?"
     altoCarga="20.5rem"
-    descripcion="Mano de obra y repuestos de las reparaciones finalizadas."
+    descripcion="Mano de obra y repuestos de todas las reparaciones registradas."
     archivo="costos-de-reparacion-por-sede"
     [columnas]="columnasCostos"
     [filas]="filasCostos()"
@@ -155,13 +155,13 @@
     [cargando]="cargando(costos)"
     [error]="error(costos)"
     [vacio]="filasCostos().length === 0"
-    mensajeVacio="Aún no hay reparaciones finalizadas."
+    mensajeVacio="Aún no hay reparaciones registradas."
     (reintentar)="costos.reload()"
   >
     <app-grafico-barras
       [series]="['Mano de obra', 'Repuestos']"
       [categorias]="categoriasCostos()"
-      descripcion="Barras apiladas con el costo de mano de obra y de repuestos de las reparaciones finalizadas en cada sede. Los valores están en la tabla de datos."
+      descripcion="Barras apiladas con el costo de mano de obra y de repuestos de las reparaciones de cada sede. Los valores están en la tabla de datos."
     />
   </app-seccion-reporte>
 </div>
