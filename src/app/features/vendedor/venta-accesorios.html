@@ -1,0 +1,196 @@
+<a class="enlace-volver" routerLink="/vendedor/ventas"
+  ><app-icono nombre="atras" />Volver a ventas</a
+>
+<h1>Vender accesorios</h1>
+
+@if (accesorios.isLoading()) {
+  <app-esqueleto etiqueta="Cargando los accesorios" [cantidad]="5" />
+} @else if (accesorios.error()) {
+  <app-estado-error
+    titulo="No se pudieron cargar los accesorios."
+    [mensaje]="mensajeCarga()"
+    (reintentar)="accesorios.reload()"
+  />
+} @else if (etapa() === 'datos') {
+  <form
+    class="formulario formulario--ancho"
+    [formGroup]="formulario"
+    (ngSubmit)="revisar()"
+    novalidate
+  >
+    <h2 id="titulo-etapa" class="etapa__titulo" tabindex="-1">Datos de la venta</h2>
+
+    <app-selector-cliente [(cliente)]="cliente" [error]="errorCliente()" />
+
+    <fieldset class="grupo" formArrayName="items">
+      <legend>Accesorios</legend>
+      <ol class="items-venta">
+        @for (item of items.controls; track item; let i = $index) {
+          <li class="item-venta" [formGroupName]="i">
+            <div class="campo item-venta__accesorio">
+              <label class="campo__etiqueta" [for]="'item-accesorio-' + i"
+                >Accesorio {{ i + 1 }}</label
+              >
+              <select
+                class="control"
+                formControlName="idAccesorio"
+                [id]="'item-accesorio-' + i"
+                [attr.aria-invalid]="error(item.controls.idAccesorio) ? 'true' : null"
+                [attr.aria-describedby]="
+                  error(item.controls.idAccesorio) ? 'error-accesorio-' + i : null
+                "
+              >
+                <option [ngValue]="null" disabled>Elige el accesorio</option>
+                @for (accesorio of catalogo(); track accesorio.idAccesorio) {
+                  <option
+                    [ngValue]="accesorio.idAccesorio"
+                    [disabled]="yaElegido(accesorio.idAccesorio, i)"
+                  >
+                    {{ accesorio.nombre }} · {{ accesorio.precio | pesos }}
+                  </option>
+                }
+              </select>
+              @if (error(item.controls.idAccesorio); as mensaje) {
+                <p class="campo__error" [id]="'error-accesorio-' + i">
+                  <app-icono nombre="error" />{{ mensaje }}
+                </p>
+              }
+            </div>
+            <div class="campo">
+              <label class="campo__etiqueta" [for]="'item-cantidad-' + i">Cantidad</label>
+              <input
+                class="control dato"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                max="99"
+                formControlName="cantidad"
+                [id]="'item-cantidad-' + i"
+                [attr.aria-invalid]="error(item.controls.cantidad) ? 'true' : null"
+                [attr.aria-describedby]="
+                  error(item.controls.cantidad) ? 'error-cantidad-' + i : null
+                "
+              />
+              @if (error(item.controls.cantidad); as mensaje) {
+                <p class="campo__error" [id]="'error-cantidad-' + i">
+                  <app-icono nombre="error" />{{ mensaje }}
+                </p>
+              }
+            </div>
+            <div class="campo">
+              <label class="campo__etiqueta" [for]="'item-precio-' + i">Precio unitario</label>
+              <input
+                class="control dato"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                step="1000"
+                formControlName="precioUnitario"
+                [id]="'item-precio-' + i"
+                [attr.aria-invalid]="error(item.controls.precioUnitario) ? 'true' : null"
+                [attr.aria-describedby]="
+                  error(item.controls.precioUnitario) ? 'error-precio-' + i : null
+                "
+              />
+              @if (error(item.controls.precioUnitario); as mensaje) {
+                <p class="campo__error" [id]="'error-precio-' + i">
+                  <app-icono nombre="error" />{{ mensaje }}
+                </p>
+              }
+            </div>
+            <p class="item-venta__subtotal">
+              <span class="pequeno muted">Subtotal</span>
+              <span class="dato">{{ subtotal(item) | pesos }}</span>
+            </p>
+            <button
+              type="button"
+              class="btn btn--icono item-venta__quitar"
+              [attr.aria-label]="'Quitar accesorio ' + (i + 1)"
+              [disabled]="items.length === 1"
+              (click)="quitar(i)"
+            >
+              <app-icono nombre="quitar" />
+            </button>
+          </li>
+        }
+      </ol>
+      <button
+        id="agregar-item"
+        type="button"
+        class="btn btn--secundario"
+        [disabled]="items.length >= maximo || items.length >= catalogo().length"
+        (click)="agregar()"
+      >
+        <app-icono nombre="agregar" />Agregar otro accesorio
+      </button>
+    </fieldset>
+
+    <div class="formulario__fila">
+      <app-campo etiqueta="Método de pago" [obligatorio]="true" [error]="errorCampo('metodoPago')">
+        <select appControl formControlName="metodoPago">
+          <option value="" disabled>Elige el método</option>
+          @for (metodo of metodos; track metodo[0]) {
+            <option [value]="metodo[0]">{{ metodo[1] }}</option>
+          }
+        </select>
+      </app-campo>
+      <app-campo etiqueta="Factura" [obligatorio]="true" [error]="errorCampo('tipoFactura')">
+        <select appControl formControlName="tipoFactura">
+          <option value="" disabled>Elige el tipo</option>
+          @for (factura of facturas; track factura[0]) {
+            <option [value]="factura[0]">{{ factura[1] }}</option>
+          }
+        </select>
+      </app-campo>
+    </div>
+
+    <p class="total-venta" aria-live="polite">
+      Total <span class="dato">{{ total() | pesos }}</span>
+    </p>
+    <div class="acciones">
+      <button type="submit" class="btn btn--primario">Revisar venta</button>
+    </div>
+  </form>
+} @else {
+  <section class="resumen-venta" aria-labelledby="titulo-etapa">
+    <h2 id="titulo-etapa" class="etapa__titulo" tabindex="-1">Revisa antes de confirmar</h2>
+    <dl class="resumen">
+      <div>
+        <dt>Cliente</dt>
+        <dd>
+          @if (cliente(); as comprador) {
+            {{ nombre(comprador) }} · <span class="dato">{{ comprador.documento }}</span>
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Pago</dt>
+        <dd>{{ textoPago() }}</dd>
+      </div>
+    </dl>
+    <ul class="items">
+      @for (item of items.controls; track item) {
+        <li>
+          <span>{{ nombreAccesorio(item) }} × {{ item.controls.cantidad.value }}</span>
+          <span class="dato">{{ subtotal(item) | pesos }}</span>
+        </li>
+      }
+    </ul>
+    <p class="resumen-venta__valor">
+      Total <span class="dato">{{ total() | pesos }}</span>
+    </p>
+    @if (errorVenta()) {
+      <div id="error-venta" class="alerta" role="alert" tabindex="-1">
+        <app-icono nombre="error" /><span
+          >{{ errorVenta() }} Corrige los datos y vuelve a intentarlo.</span
+        >
+      </div>
+    }
+    <div class="acciones">
+      <button type="button" class="btn btn--primario" [disabled]="enviando()" (click)="confirmar()">
+        {{ enviando() ? 'Registrando…' : 'Confirmar venta' }}
+      </button>
+      <button type="button" class="btn btn--secundario" (click)="corregir()">Corregir datos</button>
+    </div>
+  </section>
+}

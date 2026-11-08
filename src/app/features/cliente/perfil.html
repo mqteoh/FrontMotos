@@ -1,0 +1,91 @@
+<header class="cuenta__cabecera">
+  <h1>Mi perfil</h1>
+</header>
+
+@if (perfil.isLoading()) {
+  <app-esqueleto etiqueta="Cargando tu perfil" [cantidad]="6" />
+} @else if (perfil.error()) {
+  <app-estado-error
+    titulo="No se pudo cargar tu perfil."
+    [mensaje]="mensajeCarga()"
+    (reintentar)="perfil.reload()"
+  />
+} @else if (datos(); as datos) {
+  <section class="cuenta__seccion" aria-labelledby="titulo-cuenta">
+    <h2 id="titulo-cuenta">Datos de la cuenta</h2>
+    <dl class="resumen">
+      <div>
+        <dt>Documento</dt>
+        <dd class="dato">{{ datos.documento }}</dd>
+      </div>
+      <div>
+        <dt>Correo de acceso</dt>
+        <dd>{{ datos.correoAcceso }}</dd>
+      </div>
+      <div>
+        <dt>Edad</dt>
+        <dd>
+          <span class="dato">{{ datos.edad }}</span> años
+        </dd>
+      </div>
+    </dl>
+    <p class="muted pequeno">El documento y el correo de acceso no se pueden cambiar desde aquí.</p>
+  </section>
+
+  <form class="formulario perfil" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+    <fieldset class="grupo">
+      <legend>Datos personales</legend>
+      <div class="formulario__fila">
+        <app-campo etiqueta="Nombres" [obligatorio]="true" [error]="error('nombres')">
+          <input appControl type="text" formControlName="nombres" autocomplete="given-name" />
+        </app-campo>
+        <app-campo etiqueta="Apellidos" [obligatorio]="true" [error]="error('apellidos')">
+          <input appControl type="text" formControlName="apellidos" autocomplete="family-name" />
+        </app-campo>
+      </div>
+      <app-campo
+        etiqueta="Fecha de nacimiento"
+        [obligatorio]="true"
+        [error]="error('fechaNacimiento')"
+      >
+        <input appControl type="date" [max]="hoy" formControlName="fechaNacimiento" />
+      </app-campo>
+    </fieldset>
+
+    <fieldset class="grupo">
+      <legend>Dirección</legend>
+      <div class="formulario__fila">
+        <app-campo etiqueta="Ciudad" [obligatorio]="true" [error]="error('ciudad')">
+          <input appControl type="text" formControlName="ciudad" />
+        </app-campo>
+        <app-campo etiqueta="Barrio" [obligatorio]="true" [error]="error('barrio')">
+          <input appControl type="text" formControlName="barrio" />
+        </app-campo>
+      </div>
+      <div class="formulario__fila">
+        <app-campo etiqueta="Calle o avenida" [obligatorio]="true" [error]="error('calle')">
+          <input appControl type="text" formControlName="calle" />
+        </app-campo>
+        <app-campo etiqueta="Número" [obligatorio]="true" [error]="error('numeroDireccion')">
+          <input appControl type="text" formControlName="numeroDireccion" />
+        </app-campo>
+      </div>
+    </fieldset>
+
+    <app-lista-contactos [lista]="formulario.controls.telefonos" tipo="telefono" />
+    <app-lista-contactos
+      [lista]="formulario.controls.correos"
+      tipo="correo"
+      ayuda="Hasta 5 correos. No cambian tu correo de acceso."
+    />
+
+    @if (errorGeneral()) {
+      <p class="alerta" role="alert"><app-icono nombre="error" />{{ errorGeneral() }}</p>
+    }
+    <div class="acciones">
+      <button type="submit" class="btn btn--primario" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando…' : 'Guardar cambios' }}
+      </button>
+    </div>
+  </form>
+}

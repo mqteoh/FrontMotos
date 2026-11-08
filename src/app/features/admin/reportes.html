@@ -1,0 +1,190 @@
+<header>
+  <h1>Reportes de gestión</h1>
+  <p class="muted">Cifras calculadas por la base de datos con la información de todas las sedes.</p>
+</header>
+
+<section class="resumen-gestion" aria-labelledby="titulo-resumen">
+  <h2 id="titulo-resumen">
+    @if (periodo()) {
+      Resumen de {{ periodo() }}
+    } @else {
+      Resumen del mes
+    }
+  </h2>
+  @if (cargando(resumen)) {
+    <div class="kpis kpis--carga" role="status">
+      <span class="sr-only">Cargando el resumen del mes</span>
+      @for (indice of tarjetasCarga; track indice) {
+        <div class="kpi" [class.kpi--principal]="indice === 0" aria-hidden="true">
+          <span class="esqueleto__bloque esqueleto__linea"></span>
+          <span class="esqueleto__bloque esqueleto__linea esqueleto__linea--titulo"></span>
+        </div>
+      }
+    </div>
+  } @else if (error(resumen); as mensaje) {
+    <app-estado-error
+      titulo="No se pudo cargar el resumen."
+      [mensaje]="mensaje"
+      (reintentar)="resumen.reload()"
+    />
+  } @else if (datosResumen(); as datos) {
+    <dl class="kpis">
+      <div class="kpi kpi--principal">
+        <dt>Ventas de motos en {{ mesResumen() }}</dt>
+        <dd class="kpi__valor">{{ datos.ventasMotosMes | pesos }}</dd>
+        <dd class="kpi__nota">
+          {{ datos.motosVendidasMes }}
+          {{ datos.motosVendidasMes === 1 ? 'moto vendida' : 'motos vendidas' }}
+        </dd>
+      </div>
+      <div class="kpi">
+        <dt>Ventas de accesorios en {{ mesResumen() }}</dt>
+        <dd class="kpi__valor">{{ datos.ventasAccesoriosMes | pesos }}</dd>
+      </div>
+      <div class="kpi">
+        <dt>Motos disponibles</dt>
+        <dd class="kpi__valor">{{ datos.motosDisponibles | numero }}</dd>
+      </div>
+      <div class="kpi">
+        <dt>Reservas activas</dt>
+        <dd class="kpi__valor">{{ datos.reservasActivas | numero }}</dd>
+      </div>
+      <div class="kpi">
+        <dt>Reparaciones del mes</dt>
+        <dd class="kpi__valor">{{ datos.reparacionesMes | numero }}</dd>
+      </div>
+      <div class="kpi">
+        <dt>Clientes</dt>
+        <dd class="kpi__valor">{{ datos.clientes | numero }}</dd>
+      </div>
+      <div class="kpi">
+        <dt>Empleados</dt>
+        <dd class="kpi__valor">{{ datos.empleados | numero }}</dd>
+      </div>
+    </dl>
+  }
+</section>
+
+<app-seccion-reporte
+  titulo="¿Cómo van las ventas mes a mes?"
+  altoCarga="22rem"
+  descripcion="Valor vendido en motos y en accesorios en cada mes del año elegido."
+  [archivo]="'ventas-por-mes-' + anio()"
+  [columnas]="columnasMes"
+  [filas]="filasMes()"
+  [claveFila]="claveMes"
+  [cargando]="cargando(porMes)"
+  [error]="error(porMes)"
+  [vacio]="sinVentasEnAnio()"
+  [mensajeVacio]="'No hubo ventas en ' + anio() + '.'"
+  ayudaVacio="Elige otro año para ver sus ventas."
+  (reintentar)="porMes.reload()"
+>
+  <div class="campo reporte__filtro" controles>
+    <label class="campo__etiqueta" for="reporte-anio">Año</label>
+    <select id="reporte-anio" class="control" (change)="cambiarAnio($event)">
+      @for (opcion of anios; track opcion) {
+        <option [value]="opcion" [selected]="opcion === anio()">{{ opcion }}</option>
+      }
+    </select>
+  </div>
+  <app-grafico-barras
+    orientacion="vertical"
+    [series]="['Motos', 'Accesorios']"
+    [categorias]="categoriasMes()"
+    [descripcion]="
+      'Columnas apiladas con las ventas de motos y de accesorios de cada mes de ' +
+      anio() +
+      '. Los valores están en la tabla de datos.'
+    "
+  />
+</app-seccion-reporte>
+
+<app-seccion-reporte
+  titulo="¿Quién vende más?"
+  altoCarga="27rem"
+  descripcion="Total vendido por cada vendedor, separado en motos y accesorios."
+  archivo="ventas-por-vendedor"
+  [columnas]="columnasVendedor"
+  [filas]="filasVendedor()"
+  [claveFila]="claveVendedor"
+  [cargando]="cargando(porVendedor)"
+  [error]="error(porVendedor)"
+  [vacio]="filasVendedor().length === 0"
+  mensajeVacio="Aún no hay ventas registradas."
+  (reintentar)="porVendedor.reload()"
+>
+  <app-grafico-barras
+    [series]="['Motos', 'Accesorios']"
+    [categorias]="categoriasVendedor()"
+    descripcion="Barras apiladas con lo vendido por cada vendedor en motos y en accesorios, de mayor a menor. Los valores están en la tabla de datos."
+  />
+</app-seccion-reporte>
+
+<div class="reportes__par">
+  <app-seccion-reporte
+    titulo="¿Dónde hay motos para vender?"
+    altoCarga="18.5rem"
+    descripcion="Motos del inventario sin vender ni reservar en cada sede."
+    archivo="motos-disponibles-por-sede"
+    [columnas]="columnasDisponibles"
+    [filas]="filasDisponibles()"
+    [claveFila]="claveSede"
+    [cargando]="cargando(disponibles)"
+    [error]="error(disponibles)"
+    [vacio]="filasDisponibles().length === 0"
+    mensajeVacio="No hay motos disponibles en ninguna sede."
+    (reintentar)="disponibles.reload()"
+  >
+    <app-grafico-barras
+      formato="unidades"
+      [series]="['Motos disponibles']"
+      [categorias]="categoriasDisponibles()"
+      descripcion="Barras con la cantidad de motos disponibles en cada sede. Los valores están en la tabla de datos."
+    />
+  </app-seccion-reporte>
+
+  <app-seccion-reporte
+    titulo="¿Cuánto cuestan las reparaciones en cada sede?"
+    altoCarga="20.5rem"
+    descripcion="Mano de obra y repuestos de todas las reparaciones registradas."
+    archivo="costos-de-reparacion-por-sede"
+    [columnas]="columnasCostos"
+    [filas]="filasCostos()"
+    [claveFila]="claveSede"
+    [cargando]="cargando(costos)"
+    [error]="error(costos)"
+    [vacio]="filasCostos().length === 0"
+    mensajeVacio="Aún no hay reparaciones registradas."
+    (reintentar)="costos.reload()"
+  >
+    <app-grafico-barras
+      [series]="['Mano de obra', 'Repuestos']"
+      [categorias]="categoriasCostos()"
+      descripcion="Barras apiladas con el costo de mano de obra y de repuestos de las reparaciones de cada sede. Los valores están en la tabla de datos."
+    />
+  </app-seccion-reporte>
+</div>
+
+<app-seccion-reporte
+  titulo="¿Se usan los repuestos que llegan a cada sede?"
+  altoCarga="22rem"
+  descripcion="Unidades recibidas de los proveedores frente a las usadas en reparaciones. La tabla muestra el detalle por repuesto."
+  archivo="repuestos-recibidos-y-usados"
+  [columnas]="columnasRepuestos"
+  [filas]="filasRepuestos()"
+  [claveFila]="claveRepuesto"
+  [cargando]="cargando(repuestos)"
+  [error]="error(repuestos)"
+  [vacio]="filasRepuestos().length === 0"
+  mensajeVacio="Aún no hay entregas ni repuestos usados."
+  (reintentar)="repuestos.reload()"
+>
+  <app-grafico-barras
+    formato="unidades"
+    modo="agrupado"
+    [series]="['Recibidas', 'Usadas']"
+    [categorias]="categoriasRepuestos()"
+    descripcion="Barras agrupadas con las unidades de repuestos recibidas y usadas en cada sede. Los valores están en la tabla de datos."
+  />
+</app-seccion-reporte>

@@ -1,0 +1,256 @@
+@if (editando()) {
+  <a class="enlace-volver" [routerLink]="['/tecnico/reparaciones', idReparacion()]"
+    ><app-icono nombre="atras" />Volver a la reparación</a
+  >
+  <h1>Corregir reparación N.º {{ idReparacion() }}</h1>
+} @else {
+  <a class="enlace-volver" routerLink="/tecnico"
+    ><app-icono nombre="atras" />Volver a las reparaciones</a
+  >
+  <h1>Registrar reparación</h1>
+  <p class="muted">
+    Registra un trabajo ya terminado. El taller solo atiende motos vendidas por el concesionario.
+  </p>
+}
+
+@if (cargando()) {
+  <app-esqueleto etiqueta="Cargando el formulario" [cantidad]="6" />
+} @else if (errorCarga()) {
+  <app-estado-error
+    titulo="No se pudo preparar el formulario."
+    [mensaje]="mensajeCarga()"
+    (reintentar)="tecnicosDisponibles.reload(); repuestos.reload(); existente.reload()"
+  />
+} @else {
+  <form
+    class="formulario formulario--ancho"
+    [formGroup]="formulario"
+    (ngSubmit)="guardar()"
+    novalidate
+  >
+    <fieldset class="grupo">
+      <legend>Moto y trabajo</legend>
+      <div class="formulario__fila">
+        <app-campo
+          etiqueta="Placa"
+          ayuda="Tres letras, dos números y una letra, por ejemplo ABC12D."
+          [obligatorio]="true"
+          [error]="error('placa')"
+        >
+          <input
+            appControl
+            class="dato"
+            type="text"
+            maxlength="6"
+            autocapitalize="characters"
+            autocomplete="off"
+            formControlName="placa"
+          />
+        </app-campo>
+        <app-campo etiqueta="Fecha del trabajo" [obligatorio]="true" [error]="error('fecha')">
+          <input appControl class="dato" type="date" [max]="hoy" formControlName="fecha" />
+        </app-campo>
+      </div>
+      <app-campo
+        etiqueta="Trabajo realizado"
+        ayuda="Qué se revisó o se cambió. Máximo 255 caracteres."
+        [obligatorio]="true"
+        [error]="error('descripcion')"
+      >
+        <textarea appControl rows="3" maxlength="255" formControlName="descripcion"></textarea>
+      </app-campo>
+      <app-campo
+        etiqueta="Mano de obra en pesos"
+        ayuda="Sin repuestos; esos se suman aparte."
+        [obligatorio]="true"
+        [error]="error('costo')"
+      >
+        <input
+          appControl
+          class="dato"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          step="1000"
+          formControlName="costo"
+        />
+      </app-campo>
+    </fieldset>
+
+    <fieldset
+      class="grupo"
+      [attr.aria-describedby]="errorTecnicos() ? 'error-tecnicos' : 'ayuda-tecnicos'"
+    >
+      <legend>Técnicos que participaron</legend>
+      <p class="campo__ayuda" id="ayuda-tecnicos">
+        @if (esTecnico()) {
+          Tú quedas incluido. Marca a los compañeros de tu sede que también trabajaron.
+        } @else {
+          Todos deben ser de la misma sede.
+        }
+      </p>
+      @for (grupo of gruposTecnicos(); track grupo.sede) {
+        <div class="casillas">
+          @if (!esTecnico()) {
+            <p class="casillas__titulo">{{ grupo.sede }}</p>
+          }
+          @for (tecnico of grupo.tecnicos; track tecnico.idEmpleado) {
+            <label class="casilla">
+              <input
+                type="checkbox"
+                [checked]="marcado(tecnico.idEmpleado)"
+                [disabled]="esPropio(tecnico.idEmpleado)"
+                [attr.aria-invalid]="errorTecnicos() ? 'true' : null"
+                (change)="alternar(tecnico.idEmpleado, $event)"
+              />
+              {{ tecnico.nombre }}
+              @if (esPropio(tecnico.idEmpleado)) {
+                <span class="muted pequeno">(tú)</span>
+              }
+            </label>
+          }
+        </div>
+      }
+      @if (errorTecnicos()) {
+        <p id="error-tecnicos" class="campo__error">
+          <app-icono nombre="error" />{{ errorTecnicos() }}
+        </p>
+      }
+    </fieldset>
+
+    <fieldset class="grupo" formArrayName="repuestos">
+      <legend>Repuestos usados</legend>
+      @if (usos.length === 0) {
+        <p class="muted">Sin repuestos. Agrégalos si el trabajo los necesitó.</p>
+      }
+      <ol class="items-venta">
+        @for (uso of usos.controls; track uso; let i = $index) {
+          <li class="item-venta" [formGroupName]="i">
+            <div class="campo item-venta__accesorio">
+              <label class="campo__etiqueta" [for]="'uso-repuesto-' + i"
+                >Repuesto {{ i + 1 }}</label
+              >
+              <select
+                class="control"
+                formControlName="idRepuesto"
+                [id]="'uso-repuesto-' + i"
+                [attr.aria-invalid]="errorUso(uso.controls.idRepuesto) ? 'true' : null"
+                [attr.aria-describedby]="
+                  errorUso(uso.controls.idRepuesto) ? 'error-repuesto-' + i : null
+                "
+              >
+                <option [ngValue]="null" disabled>Elige el repuesto</option>
+                @for (grupo of categorias(); track grupo.categoria) {
+                  <optgroup [label]="grupo.categoria">
+                    @for (repuesto of grupo.lista; track repuesto.idRepuesto) {
+                      <option
+                        [ngValue]="repuesto.idRepuesto"
+                        [disabled]="yaElegido(repuesto.idRepuesto, i)"
+                      >
+                        {{ repuesto.nombre }} · {{ repuesto.precio | pesos }}
+                      </option>
+                    }
+                  </optgroup>
+                }
+              </select>
+              @if (errorUso(uso.controls.idRepuesto); as mensaje) {
+                <p class="campo__error" [id]="'error-repuesto-' + i">
+                  <app-icono nombre="error" />{{ mensaje }}
+                </p>
+              }
+            </div>
+            <div class="campo">
+              <label class="campo__etiqueta" [for]="'uso-cantidad-' + i">Cantidad</label>
+              <input
+                class="control dato"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                max="99"
+                formControlName="cantidad"
+                [id]="'uso-cantidad-' + i"
+                [attr.aria-invalid]="errorUso(uso.controls.cantidad) ? 'true' : null"
+                [attr.aria-describedby]="
+                  errorUso(uso.controls.cantidad) ? 'error-cantidad-' + i : null
+                "
+              />
+              @if (errorUso(uso.controls.cantidad); as mensaje) {
+                <p class="campo__error" [id]="'error-cantidad-' + i">
+                  <app-icono nombre="error" />{{ mensaje }}
+                </p>
+              }
+            </div>
+            <div class="campo">
+              <label class="campo__etiqueta" [for]="'uso-precio-' + i">Precio unitario</label>
+              <input
+                class="control dato"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                step="1000"
+                formControlName="precioUnitario"
+                [id]="'uso-precio-' + i"
+                [attr.aria-invalid]="errorUso(uso.controls.precioUnitario) ? 'true' : null"
+                [attr.aria-describedby]="
+                  errorUso(uso.controls.precioUnitario) ? 'error-precio-' + i : null
+                "
+              />
+              @if (errorUso(uso.controls.precioUnitario); as mensaje) {
+                <p class="campo__error" [id]="'error-precio-' + i">
+                  <app-icono nombre="error" />{{ mensaje }}
+                </p>
+              }
+            </div>
+            <p class="item-venta__subtotal">
+              <span class="pequeno muted">Subtotal</span>
+              <span class="dato">{{ subtotal(uso) | pesos }}</span>
+            </p>
+            <button
+              type="button"
+              class="btn btn--icono item-venta__quitar"
+              [attr.aria-label]="'Quitar repuesto ' + (i + 1)"
+              (click)="quitarRepuesto(i)"
+            >
+              <app-icono nombre="quitar" />
+            </button>
+          </li>
+        }
+      </ol>
+      <button
+        id="agregar-repuesto"
+        type="button"
+        class="btn btn--secundario"
+        [disabled]="usos.length >= maximo || usos.length >= catalogo().length"
+        (click)="agregarRepuesto()"
+      >
+        <app-icono nombre="agregar" />Agregar repuesto
+      </button>
+    </fieldset>
+
+    <dl class="resumen">
+      <div>
+        <dt>Repuestos</dt>
+        <dd class="dato">{{ totalRepuestos() | pesos }}</dd>
+      </div>
+    </dl>
+    <p class="total-venta">
+      Total <span class="dato">{{ total() | pesos }}</span>
+    </p>
+
+    @if (errorEnvio()) {
+      <div id="error-envio" class="alerta" role="alert" tabindex="-1">
+        <app-icono nombre="error" /><span>{{ errorEnvio() }}</span>
+      </div>
+    }
+
+    <div class="acciones">
+      <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+        @if (enviando()) {
+          Guardando…
+        } @else {
+          {{ editando() ? 'Guardar cambios' : 'Registrar reparación' }}
+        }
+      </button>
+    </div>
+  </form>
+}

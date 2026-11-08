@@ -1,0 +1,100 @@
+<a class="enlace-volver" routerLink="/tecnico"
+  ><app-icono nombre="atras" />Volver a las reparaciones</a
+>
+
+@if (reparacion.isLoading() && !datos()) {
+  <app-esqueleto etiqueta="Cargando la reparación" [cantidad]="6" />
+} @else if (reparacion.error()) {
+  <app-estado-error
+    titulo="No se pudo cargar la reparación."
+    [mensaje]="mensajeCarga()"
+    (reintentar)="reparacion.reload()"
+  />
+} @else if (datos(); as datos) {
+  <header class="reparacion__cabecera">
+    <app-placa [placa]="datos.placa" [grande]="true" />
+    <h1 id="titulo-reparacion" tabindex="-1">Reparación N.º {{ datos.idReparacion }}</h1>
+    @if (puedeCorregir()) {
+      <a
+        class="btn btn--secundario reparacion__corregir"
+        [routerLink]="['/tecnico/reparaciones', datos.idReparacion, 'editar']"
+      >
+        <app-icono nombre="editar" />Corregir
+      </a>
+    }
+  </header>
+
+  <dl class="resumen">
+    <div>
+      <dt>Moto</dt>
+      <dd>{{ datos.marca }} {{ datos.modelo }}</dd>
+    </div>
+    <div>
+      <dt>Fecha</dt>
+      <dd class="dato">{{ datos.fecha | fecha }}</dd>
+    </div>
+    @if (datos.cliente) {
+      <div>
+        <dt>Cliente</dt>
+        <dd>{{ datos.cliente }}</dd>
+      </div>
+    }
+    @if (datos.sucursal) {
+      <div>
+        <dt>Sede</dt>
+        <dd>{{ datos.sucursal }}</dd>
+      </div>
+    }
+    <div>
+      <dt>{{ datos.tecnicos.length === 1 ? 'Técnico' : 'Técnicos' }}</dt>
+      <dd>{{ tecnicos() }}</dd>
+    </div>
+  </dl>
+
+  <section class="cuenta__seccion" aria-labelledby="titulo-trabajo">
+    <h2 id="titulo-trabajo">Trabajo realizado</h2>
+    <p class="tarjeta-cuenta__texto">{{ datos.descripcion }}</p>
+  </section>
+
+  <section class="cuenta__seccion" aria-labelledby="titulo-repuestos">
+    <h2 id="titulo-repuestos">Repuestos usados</h2>
+    @if (datos.repuestos.length === 0) {
+      <p class="muted">No se usaron repuestos en esta reparación.</p>
+    } @else {
+      <ul class="repuestos-usados">
+        @for (uso of datos.repuestos; track uso.idRepuesto) {
+          <li>
+            <span class="repuestos-usados__nombre">
+              {{ uso.nombre }}
+              <span class="muted pequeno">{{ uso.categoria }}</span>
+            </span>
+            <span class="dato">{{ uso.cantidad }} × {{ uso.precioUnitario | pesos }}</span>
+            <span class="dato repuestos-usados__subtotal">{{ uso.subtotal | pesos }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="cuenta__seccion" aria-labelledby="titulo-costos">
+    <h2 id="titulo-costos">Costos</h2>
+    <dl class="resumen">
+      <div>
+        <dt>Mano de obra</dt>
+        <dd class="dato">{{ datos.costoManoObra | pesos }}</dd>
+      </div>
+      <div>
+        <dt>Repuestos</dt>
+        <dd class="dato">{{ datos.costoRepuestos | pesos }}</dd>
+      </div>
+      <div>
+        <dt>Total</dt>
+        <dd class="dato">{{ datos.costoTotal | pesos }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <a class="enlace-accion" routerLink="/tecnico/historial" [queryParams]="{ placa: datos.placa }">
+    Ver el historial de la moto {{ datos.placa }}
+  </a>
+}

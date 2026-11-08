@@ -1,0 +1,368 @@
+.cuenta {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.cuenta__nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-05) var(--space-1);
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--color-divider);
+  list-style: none;
+}
+
+.cuenta__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alto-control);
+  margin-bottom: -1px;
+  padding-inline: var(--space-2);
+  border-bottom: 2px solid transparent;
+  color: var(--color-text);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--dur-rapida);
+}
+
+.cuenta__nav a:hover {
+  color: var(--color-accent-text);
+}
+
+.cuenta__nav a.activo {
+  border-bottom-color: currentColor;
+  color: var(--color-accent-text);
+  font-weight: 700;
+}
+
+.cuenta__pagina {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 56rem;
+}
+
+.cuenta__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.cuenta__cabecera h1,
+.cuenta__seccion h2 {
+  margin: 0;
+}
+
+.cuenta__seccion {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.total {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.total .dato {
+  margin-inline-start: var(--space-1);
+  color: var(--color-text);
+  font-size: 1.25rem;
+}
+
+.tarjetas-cuenta {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjeta-cuenta {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  padding: var(--space-3);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.tarjeta-cuenta > * {
+  margin: 0;
+}
+
+.tarjeta-cuenta--destacada {
+  border-color: var(--color-accent-text);
+}
+
+.tarjeta-cuenta__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  width: 100%;
+}
+
+.tarjeta-cuenta__cabecera > * {
+  margin: 0;
+}
+
+.tarjeta-cuenta__titulo {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.tarjeta-cuenta__valor {
+  margin-inline-start: auto;
+  font-size: 1.125rem;
+}
+
+.tarjeta-cuenta__aviso {
+  font-size: 1.125rem;
+}
+
+.tarjeta-cuenta__texto {
+  max-width: 60ch;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-1) var(--space-3);
+  width: 100%;
+  margin: 0;
+}
+
+.resumen div {
+  display: grid;
+  gap: 2px;
+}
+
+.resumen dt {
+  color: var(--color-text-muted);
+  font-size: var(--texto-pequeno);
+}
+
+.resumen dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+  margin: 0;
+}
+
+.resumen__extra {
+  color: var(--color-text-muted);
+}
+
+.items,
+.costos__repuestos {
+  display: grid;
+  gap: var(--space-05);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.items li,
+.costos__repuestos li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block: var(--space-05);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.costos {
+  width: 100%;
+}
+
+.costos summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+  min-height: var(--alto-control);
+  font-weight: 600;
+}
+
+.costos__detalle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-1) 0;
+}
+
+.costos__detalle dt {
+  color: var(--color-text-muted);
+  font-size: var(--texto-pequeno);
+}
+
+.costos__detalle dd {
+  margin: 0;
+}
+
+.confirmacion {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  max-width: 40rem;
+}
+
+.confirmacion > * {
+  margin: 0;
+}
+
+.confirmacion h1 {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.confirmacion h1 app-icono {
+  color: var(--color-accent-text);
+}
+
+.confirmacion__moto {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.confirmacion__moto > * {
+  margin: 0;
+}
+
+.confirmacion__nombre {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.confirmacion__precio {
+  font-size: 1.5rem;
+}
+
+.condiciones {
+  display: grid;
+  gap: var(--space-1);
+  padding-inline-start: 1.25rem;
+}
+
+.pasos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-muted);
+}
+
+.pasos li {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  font-weight: 500;
+}
+
+.pasos__numero {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+
+.pasos__actual {
+  color: var(--color-accent-text);
+  font-weight: 700;
+}
+
+.pasos__actual .pasos__numero {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.pasos__hecho {
+  color: var(--color-text);
+}
+
+.asistente {
+  max-width: 40rem;
+}
+
+.asistente legend:focus {
+  outline: none;
+}
+
+.asistente legend:focus-visible {
+  outline: 2px solid var(--color-accent-text);
+  outline-offset: 4px;
+}
+
+.opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+}
+
+.opcion {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  min-height: var(--alto-control);
+  padding: 0 var(--space-2);
+  border: 1.5px solid var(--color-input-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.opcion:has(input:checked) {
+  border-color: var(--color-accent-text);
+  font-weight: 600;
+}
+
+.opcion input {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+.contactos {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contactos__fila {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.perfil {
+  max-width: 40rem;
+}
+
+.confirmacion h1:focus,
+.cuenta__pagina [tabindex='-1']:focus {
+  outline: none;
+}
+
+.confirmacion h1:focus-visible,
+.cuenta__pagina [tabindex='-1']:focus-visible {
+  outline: 2px solid var(--color-accent-text);
+  outline-offset: 4px;
+}
