@@ -141,7 +141,7 @@ const MODELOS = definir<Modelo>({
     { clave: 'tipo', titulo: 'Tipo', ordenable: true },
     { clave: 'cilindraje', titulo: 'Cilindraje (cc)', tipo: 'numero', ordenable: true },
     { clave: 'potenciaHp', titulo: 'Potencia (hp)', tipo: 'numero', ordenable: true },
-    { clave: 'capacidadTanque', titulo: 'Tanque (gal)', tipo: 'numero' },
+    { clave: 'capacidadTanque', titulo: 'Tanque (L)', tipo: 'numero' },
   ],
   filtros: [
     {
@@ -196,7 +196,7 @@ const MODELOS = definir<Modelo>({
     },
     {
       clave: 'capacidadTanque',
-      etiqueta: 'Capacidad del tanque (gal)',
+      etiqueta: 'Capacidad del tanque (litros)',
       tipo: 'numero',
       obligatorio: true,
       min: 0.1,
